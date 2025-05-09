@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Interface Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .link-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .link-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Bienvenue Administrateur</h1>
+    <p>Utilisez le lien ci-dessous pour ajouter un nouvel annotateur :</p>
+
+    <a class="link-button" href="/admin/ListeAnnotateur">➕ Gerer un Annotateur</a>
+    <a class="link-button" href="/admin/Dataset">Dataset</a>
+</div>
+</body>
+</html>

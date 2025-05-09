@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template1">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Datasets</title>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <style>
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+            transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+        }
+
+        .card-header {
+            background-color: #4e73df;
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2e59d9;
+        }
+
+        .btn-success {
+            background-color: #1cc88a;
+            border-color: #1cc88a;
+        }
+
+        .btn-success:hover {
+            background-color: #17a673;
+            border-color: #17a673;
+        }
+
+        .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+
+        .file-upload {
+            border: 2px dashed #4e73df;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #f8f9fc;
+        }
+
+        .file-upload i {
+            font-size: 48px;
+            color: #4e73df;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-label {
+            cursor: pointer;
+            display: block;
+            margin-bottom: 0;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1" class="container py-5">
+    <!-- Messages d'alerte -->
+    <div th:if="${message}" th:class="${'alert ' + alertClass}" role="alert">
+        <i class="bi" th:classappend="${alertClass == 'alert-success' ? 'bi-check-circle' : 'bi-exclamation-triangle'}"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="row">
+        <!-- Formulaire d'importation de fichier -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-cloud-upload me-2"></i>Importer un Dataset</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/importDataset}">
+                        <div class="file-upload">
+                            <i class="bi bi-file-earmark-arrow-up"></i>
+                            <h5>Glissez et déposez votre fichier ici</h5>
+                            <p class="text-muted">ou</p>
+                            <label for="file-upload-input" class="file-upload-label">
+                                <span class="btn btn-primary">Parcourir les fichiers</span>
+                                <input id="file-upload-input" class="file-upload-input" type="file" name="file" onchange="updateFileName(this)">
+                            </label>
+                            <p id="file-name" class="file-name mt-2">Aucun fichier sélectionné</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success"><i class="bi bi-upload me-2"></i>Importer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire d'ajout de dataset -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-database-add me-2"></i>Ajouter un Dataset</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/admin/addDataset}">
+                        <div class="mb-3">
+                            <label for="nom" class="form-label">Nom du Dataset</label>
+                            <input type="text" class="form-control" id="nom" name="nom" placeholder="Entrez le nom du dataset" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="classes" class="form-label">Classes</label>
+                            <input type="text" class="form-control" id="classes" name="classes" placeholder="Entrez les classes séparées par des virgules">
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Décrivez le dataset"></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des datasets (à implémenter) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-table me-2"></i>Liste des Datasets</h5>
+                    <div>
+                        <input type="text" class="form-control form-control-sm d-inline-block w-auto" placeholder="Rechercher...">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th>Classes</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Boucle sur les datasets -->
+                            <tr th:each="dataset : ${datasets}">
+                                <td th:text="${dataset.ID}"></td>
+                                <td th:text="${dataset.nom}"></td>
+                                <td th:text="${dataset.description}"></td>
+                                <td>
+                                    <span th:each="classe : ${dataset.classes}" class="badge bg-primary me-1" th:text="${classe.nomClasse}"></span>
+                                    <span th:if="${dataset.classes == null or dataset.classes.isEmpty()}" class="badge bg-secondary">Aucune classe</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/viewDataset(id=${dataset.ID})}" class="btn btn-sm btn-info"><i class="bi bi-eye"></i></a>
+                                    <a th:href="@{/admin/editDataset(id=${dataset.ID})}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+                                    <a th:href="@{/admin/deleteDataset(id=${dataset.ID})}" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dataset ?')"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                            <!-- Message si aucun dataset -->
+                            <tr th:if="${datasets == null or datasets.isEmpty()}">
+                                <td colspan="5" class="text-center py-4">
+                                    <i class="bi bi-database-x fs-3 d-block mb-2 text-muted"></i>
+                                    <p class="text-muted">Aucun dataset disponible. Utilisez les formulaires ci-dessus pour ajouter ou importer un dataset.</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    function updateFileName(input) {
+        const fileName = input.files[0] ? input.files[0].name : 'Aucun fichier sélectionné';
+        document.getElementById('file-name').textContent = fileName;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template1">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire Utilisateurs</title>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <style>
+        .form-container {
+            background-color: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #007bff;
+        }
+        .form-group label {
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="col-md-6 offset-md-3 mt-5">
+        <div class="form-container">
+            <div class="form-title">Modifier un Utilisateur</div>
+            <form method="post" th:action="@{save(page=${page},keyword=${keyword},size=${param.size != null ? param.size : 5})}">
+                <div class="form-group mb-3">
+                    <label for="ID">ID</label>
+                    <input id="ID" class="form-control" type="hidden" name="ID" th:value="${user.ID}">
+                    <label class="form-control-plaintext" th:text="${user.ID}"></label>
+                    <span class="text-danger" th:errors="${user.ID}"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="nom">Nom</label>
+                    <input id="nom" class="form-control" type="text" name="nom" th:value="${user.nom}" placeholder="Entrer le nom">
+                    <span class="text-danger" th:errors="${user.nom}"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="prenom">Prenom</label>
+                    <input id="prenom" class="form-control" type="text" name="prenom" th:value="${user.prenom}" placeholder="Entrer le prénom">
+                    <span class="text-danger" th:errors="${user.prenom}"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="login">Login</label>
+                    <input id="login" class="form-control" type="text" name="login" th:value="${user.login}" placeholder="Entrer le login">
+                    <span class="text-danger" th:errors="${user.login}"></span>
+                </div>
+
+                <input type="hidden" name="active" value="true">
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
