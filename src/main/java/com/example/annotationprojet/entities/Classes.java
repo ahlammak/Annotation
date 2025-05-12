@@ -11,7 +11,8 @@ import lombok.*;
 public class Classes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ID;
+    @Column(name = "id")
+    private Integer ID;
     private String nomClasse;
     @ManyToOne
     private DataSet dataSet;

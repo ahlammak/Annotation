@@ -73,7 +73,7 @@ public class AdminController {
             existing.setPrenom(annotateur.getPrenom());
             existing.setLogin(annotateur.getLogin());
 
-            // S'assurer que l'annotateur a un rôle
+
             if (existing.getRole() == null) {
                 Role roleUser = roleRepository.findByNomRole("USER");
                 if (roleUser == null) {
@@ -90,21 +90,20 @@ public class AdminController {
 
             annotateurRepository.save(existing);
         } else {
-            // Génération d'un mot de passe aléatoire à 4 chiffres
+
             clearPassword = generateRandomPassword();
             annotateur.setActive(true);
 
-            // Assigner le rôle USER à l'annotateur
+
             Role roleUser = roleRepository.findByNomRole("USER");
             if (roleUser == null) {
-                // Si le rôle n'existe pas, le créer
+
                 roleUser = new Role();
                 roleUser.setNomRole("USER");
                 roleRepository.save(roleUser);
             }
             annotateur.setRole(roleUser);
 
-            // Hashage du mot de passe
             annotateur.setPassword(passwordEncoder.encode(clearPassword));
 
             annotateurRepository.save(annotateur);
@@ -127,11 +126,10 @@ public class AdminController {
 
         Page<Annotateur> pageAnnotateur;
         if (keyword != null && !keyword.isEmpty()) {
-            // Utiliser le même mot-clé pour la recherche dans le nom et le prénom
             pageAnnotateur = annotateurRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCaseAndActiveTrue(
                     keyword, keyword, PageRequest.of(page, size));
         } else {
-            // Trouver tous les annotateurs actifs
+
             pageAnnotateur = annotateurRepository.findByActiveTrue(PageRequest.of(page, size));
         }
 

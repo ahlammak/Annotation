@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Datasets</title>
+    <title>Ajouter un Dataset</title>
     <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
     <style>
@@ -98,55 +98,61 @@
         <span th:text="${message}"></span>
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div class="row">
-        <!-- Formulaire d'importation de fichier -->
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-cloud-upload me-2"></i>Importer un Dataset</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/importDataset}">
-                        <div class="file-upload">
-                            <i class="bi bi-file-earmark-arrow-up"></i>
-                            <h5>Glissez et déposez votre fichier ici</h5>
-                            <p class="text-muted">ou</p>
-                            <label for="file-upload-input" class="file-upload-label">
-                                <span class="btn btn-primary">Parcourir les fichiers</span>
-                                <input id="file-upload-input" class="file-upload-input" type="file" name="file" onchange="updateFileName(this)">
-                            </label>
-                            <p id="file-name" class="file-name mt-2">Aucun fichier sélectionné</p>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success"><i class="bi bi-upload me-2"></i>Importer</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <!-- En-tête avec titre et bouton de retour -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Ajouter un Dataset</h3>
+        <div>
+            <a th:href="@{/admin/Dataset}" class="btn btn-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Retour au choix
+            </a>
+            <a th:href="@{/admin/admin}" class="btn btn-secondary">
+                <i class="bi bi-house"></i> Tableau de bord
+            </a>
         </div>
+    </div>
 
-        <!-- Formulaire d'ajout de dataset -->
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
+    <div class="row">
+        <!-- Formulaire unique d'ajout de dataset avec importation de fichier -->
+        <div class="col-md-10 mx-auto mb-4">
+            <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-database-add me-2"></i>Ajouter un Dataset</h5>
                 </div>
                 <div class="card-body">
-                    <form method="post" th:action="@{/admin/addDataset}">
-                        <div class="mb-3">
-                            <label for="nom" class="form-label">Nom du Dataset</label>
-                            <input type="text" class="form-control" id="nom" name="nom" placeholder="Entrez le nom du dataset" required>
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/importDataset}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nom" class="form-label">Nom du Dataset</label>
+                                    <input type="text" class="form-control" id="nom" name="nom" placeholder="Entrez le nom du dataset" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Décrivez le dataset"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="classes" class="form-label">Classes (optionnel)</label>
+                                    <input type="text" class="form-control" id="classes" name="classes" placeholder="Entrez les classes séparées par des virgules">
+                                    <div class="form-text">Ces classes seront utilisées pour l'annotation des textes.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="file-upload h-100 d-flex flex-column justify-content-center">
+                                    <i class="bi bi-file-earmark-arrow-up"></i>
+                                    <h5>Importer un fichier CSV ou Excel</h5>
+                                    <p class="text-muted">Le fichier doit contenir deux colonnes (t1, t2)</p>
+                                    <p class="text-warning"><i class="bi bi-exclamation-triangle"></i> Taille maximale: 400 MB</p>
+                                    <label for="file-upload-input" class="file-upload-label">
+                                        <span class="btn btn-primary">Parcourir les fichiers</span>
+                                        <input id="file-upload-input" class="file-upload-input" type="file" name="file" accept=".csv,.xlsx,.xls" onchange="updateFileInfo(this)" required>
+                                    </label>
+                                    <p id="file-name" class="file-name mt-2">Aucun fichier sélectionné</p>
+                                    <p id="file-size" class="text-muted"></p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="classes" class="form-label">Classes</label>
-                            <input type="text" class="form-control" id="classes" name="classes" placeholder="Entrez les classes séparées par des virgules">
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Décrivez le dataset"></textarea>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Ajouter</button>
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Ajouter le Dataset</button>
                         </div>
                     </form>
                 </div>
@@ -154,65 +160,37 @@
         </div>
     </div>
 
-    <!-- Liste des datasets (à implémenter) -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-table me-2"></i>Liste des Datasets</h5>
-                    <div>
-                        <input type="text" class="form-control form-control-sm d-inline-block w-auto" placeholder="Rechercher...">
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Description</th>
-                                <th>Classes</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- Boucle sur les datasets -->
-                            <tr th:each="dataset : ${datasets}">
-                                <td th:text="${dataset.ID}"></td>
-                                <td th:text="${dataset.nom}"></td>
-                                <td th:text="${dataset.description}"></td>
-                                <td>
-                                    <span th:each="classe : ${dataset.classes}" class="badge bg-primary me-1" th:text="${classe.nomClasse}"></span>
-                                    <span th:if="${dataset.classes == null or dataset.classes.isEmpty()}" class="badge bg-secondary">Aucune classe</span>
-                                </td>
-                                <td>
-                                    <a th:href="@{/admin/viewDataset(id=${dataset.ID})}" class="btn btn-sm btn-info"><i class="bi bi-eye"></i></a>
-                                    <a th:href="@{/admin/editDataset(id=${dataset.ID})}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-                                    <a th:href="@{/admin/deleteDataset(id=${dataset.ID})}" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dataset ?')"><i class="bi bi-trash"></i></a>
-                                </td>
-                            </tr>
-                            <!-- Message si aucun dataset -->
-                            <tr th:if="${datasets == null or datasets.isEmpty()}">
-                                <td colspan="5" class="text-center py-4">
-                                    <i class="bi bi-database-x fs-3 d-block mb-2 text-muted"></i>
-                                    <p class="text-muted">Aucun dataset disponible. Utilisez les formulaires ci-dessus pour ajouter ou importer un dataset.</p>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 </div>
 
 <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script>
-    function updateFileName(input) {
-        const fileName = input.files[0] ? input.files[0].name : 'Aucun fichier sélectionné';
-        document.getElementById('file-name').textContent = fileName;
+    function updateFileInfo(input) {
+        if (input.files[0]) {
+            const file = input.files[0];
+            const fileName = file.name;
+            const fileSize = file.size;
+
+            // Afficher le nom du fichier
+            document.getElementById('file-name').textContent = fileName;
+
+            // Afficher la taille du fichier
+            const fileSizeInMB = (fileSize / (1024 * 1024)).toFixed(2);
+            document.getElementById('file-size').textContent = `Taille: ${fileSizeInMB} MB`;
+
+            // Avertir si le fichier est trop volumineux
+            if (fileSize > 400 * 1024 * 1024) {
+                document.getElementById('file-size').classList.add('text-danger');
+                document.getElementById('file-size').classList.remove('text-muted');
+                document.getElementById('file-size').innerHTML = `<i class="bi bi-exclamation-triangle"></i> Attention: Ce fichier est trop volumineux (${fileSizeInMB} MB). La taille maximale est de 400 MB.`;
+            } else {
+                document.getElementById('file-size').classList.add('text-muted');
+                document.getElementById('file-size').classList.remove('text-danger');
+            }
+        } else {
+            document.getElementById('file-name').textContent = 'Aucun fichier sélectionné';
+            document.getElementById('file-size').textContent = '';
+        }
     }
 </script>
 </body>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Tâches</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .container-custom {
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table th {
+            font-weight: 600;
+            color: #495057;
+        }
+        .badge-deadline {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+        }
+        .deadline-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .deadline-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .deadline-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .empty-state h4 {
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+        .empty-state p {
+            color: #6c757d;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container-custom">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-list-task me-2"></i>Mes Tâches Assignées</span>
+                <a th:href="@{/user/user}" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Retour au tableau de bord
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Message d'alerte si nécessaire -->
+                <div th:if="${message}" th:class="'alert ' + ${alertClass}" role="alert">
+                    <i class="bi bi-info-circle me-2"></i><span th:text="${message}"></span>
+                </div>
+                
+                <!-- Affichage des tâches -->
+                <div th:if="${taches != null && !taches.isEmpty()}">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Dataset</th>
+                                    <th>Nombre de couples</th>
+                                    <th>Date Limite</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="tache : ${taches}">
+                                    <td th:text="${tache.ID}"></td>
+                                    <td th:text="${tache.data != null ? tache.data.nom : 'N/A'}"></td>
+                                    <td th:text="${tache.coupleTexte != null ? tache.coupleTexte.size() : '0'}"></td>
+                                    <td>
+                                        <span th:if="${tache.dateLimite != null}" 
+                                              th:text="${#dates.format(tache.dateLimite, 'dd/MM/yyyy')}"></span>
+                                        <span th:unless="${tache.dateLimite != null}">Non définie</span>
+                                    </td>
+                                    <td>
+                                        <!-- Calcul du statut basé sur la date limite -->
+                                        <span th:if="${tache.dateLimite != null}" 
+                                              th:class="'badge ' + 
+                                                      (${#dates.createNow().after(tache.dateLimite)} ? 
+                                                      'deadline-danger' : 
+                                                      (${#dates.createToday().after(#dates.create(tache.dateLimite.getTime() - 86400000 * 3))} ? 
+                                                      'deadline-warning' : 'deadline-success'))"
+                                              th:text="${#dates.createNow().after(tache.dateLimite)} ? 
+                                                      'En retard' : 
+                                                      (${#dates.createToday().after(#dates.create(tache.dateLimite.getTime() - 86400000 * 3))} ? 
+                                                      'Bientôt' : 'À temps')">
+                                        </span>
+                                        <span th:unless="${tache.dateLimite != null}" class="badge bg-secondary">Non défini</span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary btn-sm" th:href="@{/user/viewTask(id=${tache.ID})}">
+                                            <i class="bi bi-eye"></i> Voir
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- État vide si aucune tâche -->
+                <div th:if="${taches == null || taches.isEmpty()}" class="empty-state">
+                    <i class="bi bi-clipboard-x"></i>
+                    <h4>Aucune tâche assignée</h4>
+                    <p>Vous n'avez actuellement aucune tâche assignée. Les tâches apparaîtront ici lorsqu'un administrateur vous en assignera.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.example.annotationprojet.entities;
 
+import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -9,13 +10,25 @@ import lombok.*;
 @Entity @NoArgsConstructor @AllArgsConstructor @Getter @Setter @ToString @Builder
 public class coupleTexte {
     @Id
-    private int ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer ID;
+
+    @Column(length = 1000)
     private String texte1;
+
+    @Column(length = 1000)
     private String texte2;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tache_id")
     private Tache tache;
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "annotation_id")
     private Annotation annotation;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dataset_id")
     private DataSet dataSet;
 }

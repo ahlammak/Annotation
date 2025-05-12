@@ -68,14 +68,28 @@
             color: #cc3300;
             font-style: italic;
         }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
     </style>
 </head>
 <body>
 <div layout:fragment="content1">
     <div class="container-custom">
         <div class="card">
-            <div class="card-header">
-                Liste des Utilisateurs
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Liste des Utilisateurs</span>
+                <a th:href="@{/admin/admin}" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Retour au tableau de bord
+                </a>
             </div>
             <div th:if="${generatedPassword}" class="alert alert-password m-3">
                 <h5 class="alert-heading"><i class="bi bi-check-circle me-2"></i>Nouvel utilisateur créé avec succès!</h5>

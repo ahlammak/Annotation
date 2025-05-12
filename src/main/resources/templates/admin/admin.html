@@ -2,16 +2,26 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interface Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
         }
 
         .container {
-            max-width: 600px;
-            margin: auto;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Empêche les éléments enfants de déborder */
         }
 
         h1 {
@@ -19,27 +29,55 @@
         }
 
         .link-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
+            display: block;
+            width: calc(100% - 20px); /* Réduire la largeur pour éviter le débordement */
+            margin: 20px auto 0;
+            padding: 15px 24px;
             background-color: #007bff;
             color: white;
             text-decoration: none;
             border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .link-button:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .link-button i {
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+
+        .me-2 {
+            margin-right: 0.5rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Bienvenue Administrateur</h1>
-    <p>Utilisez le lien ci-dessous pour ajouter un nouvel annotateur :</p>
+    <h1><i class="bi bi-gear-fill me-2"></i>Tableau de Bord Administrateur</h1>
+    <p class="text-center mb-4">Bienvenue sur votre tableau de bord. Utilisez les options ci-dessous pour gérer l'application.</p>
 
-    <a class="link-button" href="/admin/ListeAnnotateur">➕ Gerer un Annotateur</a>
-    <a class="link-button" href="/admin/Dataset">Dataset</a>
+    <a class="link-button" href="/admin/ListeAnnotateur">
+        <i class="bi bi-people-fill me-2"></i> Gestion des Annotateurs
+    </a>
+    <a class="link-button" href="/admin/Dataset">
+        <i class="bi bi-database-fill me-2"></i> Gestion des Datasets
+    </a>
 </div>
 </body>
 </html>

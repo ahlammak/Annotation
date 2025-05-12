@@ -14,14 +14,19 @@ import java.util.List;
 public class DataSet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ID;
+    @Column(name = "id")
+    private Integer ID;
     private String nom;
     private String description;
     private String url;
-    @OneToMany(mappedBy = "dataSet")
+    private Boolean isProcessing = false;
+
+    @OneToMany(mappedBy = "dataSet", cascade = CascadeType.REMOVE)
     private List<Classes> classes;
-    @OneToMany(mappedBy = "data")
-    private  List<Tache>taches;
-    @OneToMany(mappedBy = "dataSet")
+
+    @OneToMany(mappedBy = "data", fetch = FetchType.LAZY)
+    private List<Tache> taches;
+
+    @OneToMany(mappedBy = "dataSet", cascade = CascadeType.REMOVE)
     private List<coupleTexte> coupleTexte;
 }
