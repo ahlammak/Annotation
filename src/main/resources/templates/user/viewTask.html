@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Annotation de Tâche</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .container-custom {
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        .text-card {
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .class-btn {
+            margin: 5px;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-weight: 500;
+        }
+        .class-btn.selected {
+            background-color: #28a745;
+            color: white;
+        }
+        .navigation-btn {
+            width: 120px;
+        }
+        .progress {
+            height: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+        }
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            background-color: #007bff;
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+            transition: width 0.6s ease;
+        }
+        .couple-info {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .validation-message {
+            display: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .validation-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .validation-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="container-custom">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-pencil-square me-2"></i>Annotation de Tâche</span>
+                <a th:href="@{/user/tasks}" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Retour à la liste des tâches
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Informations sur la tâche -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5><i class="bi bi-info-circle me-2"></i>Informations sur la tâche</h5>
+                        <p><strong>Dataset:</strong> <span th:text="${tache.data != null ? tache.data.nom : 'N/A'}"></span></p>
+                        <p><strong>Date limite:</strong> <span th:text="${tache.dateLimite != null ? #dates.format(tache.dateLimite, 'dd/MM/yyyy') : 'Non définie'}"></span></p>
+                        <p><strong>Nombre de couples:</strong> <span th:text="${totalCouples}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="bi bi-graph-up me-2"></i>Progression</h5>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" 
+                                 th:style="'width: ' + ${progress} + '%;'" 
+                                 th:aria-valuenow="${progress}" 
+                                 aria-valuemin="0" aria-valuemax="100"
+                                 th:text="${progress} + '%'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interface d'annotation -->
+                <div class="annotation-interface">
+                    <!-- Informations sur le couple actuel -->
+                    <div class="couple-info">
+                        <span>Couple <span id="currentCoupleIndex">1</span> sur <span th:text="${totalCouples}"></span></span>
+                        <span class="ms-3">ID: <span id="coupleId"></span></span>
+                    </div>
+
+                    <!-- Textes à annoter -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Texte 1</h5>
+                            <div class="text-card" id="texte1"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Texte 2</h5>
+                            <div class="text-card" id="texte2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Classes disponibles -->
+                    <div class="mb-4">
+                        <h5><i class="bi bi-tag me-2"></i>Classes disponibles</h5>
+                        <div class="classes-container">
+                            <div th:each="classe : ${classes}" class="d-inline-block">
+                                <button th:text="${classe.nomClasse}" 
+                                        th:data-class="${classe.nomClasse}" 
+                                        class="btn btn-outline-primary class-btn">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message de validation -->
+                    <div id="validationMessage" class="validation-message"></div>
+
+                    <!-- Boutons de navigation et validation -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button id="prevBtn" class="btn btn-secondary navigation-btn">
+                            <i class="bi bi-arrow-left me-2"></i>Précédent
+                        </button>
+                        <button id="validateBtn" class="btn btn-success">
+                            <i class="bi bi-check-circle me-2"></i>Valider
+                        </button>
+                        <button id="nextBtn" class="btn btn-primary navigation-btn">
+                            Suivant<i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des couples de textes (cachée) -->
+    <div style="display: none;">
+        <ul id="couplesList">
+            <li th:each="couple : ${coupleTextes}" th:data-id="${couple.ID}"></li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables globales
+            let currentIndex = 0;
+            let coupleIds = [];
+            let selectedClass = null;
+            
+            // Récupérer tous les IDs des couples
+            const coupleItems = document.querySelectorAll('#couplesList li');
+            coupleItems.forEach(item => {
+                coupleIds.push(item.getAttribute('data-id'));
+            });
+            
+            // Fonction pour charger les détails d'un couple
+            function loadCoupleDetails(index) {
+                if (index < 0 || index >= coupleIds.length) {
+                    return;
+                }
+                
+                const coupleId = coupleIds[index];
+                
+                // Mettre à jour l'index affiché
+                document.getElementById('currentCoupleIndex').textContent = index + 1;
+                
+                // Réinitialiser la sélection de classe
+                selectedClass = null;
+                document.querySelectorAll('.class-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // Masquer le message de validation
+                document.getElementById('validationMessage').style.display = 'none';
+                
+                // Récupérer les détails du couple
+                fetch(`/user/getCoupleDetails?coupleId=${coupleId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Mettre à jour les textes
+                            document.getElementById('coupleId').textContent = data.id;
+                            document.getElementById('texte1').textContent = data.texte1;
+                            document.getElementById('texte2').textContent = data.texte2;
+                            
+                            // Si une annotation existe déjà, la sélectionner
+                            if (data.annotation) {
+                                selectedClass = data.annotation;
+                                document.querySelectorAll('.class-btn').forEach(btn => {
+                                    if (btn.getAttribute('data-class') === data.annotation) {
+                                        btn.classList.add('selected');
+                                    }
+                                });
+                            }
+                            
+                            // Mettre à jour l'état des boutons de navigation
+                            document.getElementById('prevBtn').disabled = index === 0;
+                            document.getElementById('nextBtn').disabled = index === coupleIds.length - 1;
+                        } else {
+                            showValidationMessage(false, data.message || 'Erreur lors du chargement des détails');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showValidationMessage(false, 'Erreur de communication avec le serveur');
+                    });
+            }
+            
+            // Fonction pour sauvegarder une annotation
+            function saveAnnotation() {
+                const coupleId = coupleIds[currentIndex];
+                
+                if (!selectedClass) {
+                    showValidationMessage(false, 'Veuillez sélectionner une classe');
+                    return;
+                }
+                
+                // Préparer les données
+                const formData = new FormData();
+                formData.append('coupleId', coupleId);
+                formData.append('classeChoisie', selectedClass);
+                
+                // Envoyer la requête
+                fetch('/user/saveAnnotation', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showValidationMessage(true, 'Annotation sauvegardée avec succès');
+                        
+                        // Mettre à jour la barre de progression
+                        if (data.progress !== undefined) {
+                            const progressBar = document.querySelector('.progress-bar');
+                            progressBar.style.width = data.progress + '%';
+                            progressBar.setAttribute('aria-valuenow', data.progress);
+                            progressBar.textContent = data.progress + '%';
+                        }
+                        
+                        // Passer au couple suivant après un court délai
+                        setTimeout(() => {
+                            if (currentIndex < coupleIds.length - 1) {
+                                currentIndex++;
+                                loadCoupleDetails(currentIndex);
+                            }
+                        }, 1000);
+                    } else {
+                        showValidationMessage(false, data.message || 'Erreur lors de la sauvegarde');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    showValidationMessage(false, 'Erreur de communication avec le serveur');
+                });
+            }
+            
+            // Fonction pour afficher un message de validation
+            function showValidationMessage(success, message) {
+                const validationMessage = document.getElementById('validationMessage');
+                validationMessage.textContent = message;
+                validationMessage.className = 'validation-message';
+                validationMessage.classList.add(success ? 'validation-success' : 'validation-error');
+                validationMessage.style.display = 'block';
+            }
+            
+            // Événements pour les boutons de navigation
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    loadCoupleDetails(currentIndex);
+                }
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                if (currentIndex < coupleIds.length - 1) {
+                    currentIndex++;
+                    loadCoupleDetails(currentIndex);
+                }
+            });
+            
+            // Événement pour les boutons de classe
+            document.querySelectorAll('.class-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Désélectionner tous les boutons
+                    document.querySelectorAll('.class-btn').forEach(b => {
+                        b.classList.remove('selected');
+                    });
+                    
+                    // Sélectionner le bouton cliqué
+                    this.classList.add('selected');
+                    selectedClass = this.getAttribute('data-class');
+                });
+            });
+            
+            // Événement pour le bouton de validation
+            document.getElementById('validateBtn').addEventListener('click', saveAnnotation);
+            
+            // Charger le premier couple au chargement de la page
+            if (coupleIds.length > 0) {
+                loadCoupleDetails(currentIndex);
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

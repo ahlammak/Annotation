@@ -13,12 +13,6 @@ public class TacheService {
 
     @Autowired
     private TacheRepository tacheRepository;
-
-    /**
-     * Récupère toutes les tâches assignées à un annotateur
-     * @param annotateur L'annotateur
-     * @return Liste des tâches
-     */
     public List<Tache> getTachesByAnnotateur(Annotateur annotateur) {
         return tacheRepository.findByAnnotateur(annotateur);
     }

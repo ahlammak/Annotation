@@ -25,4 +25,41 @@ public class Tache {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "annotateur_id")
     private Annotateur annotateur;
+
+    /**
+     * Calcule le pourcentage d'avancement de la tâche
+     * @return Le pourcentage d'avancement (0-100)
+     */
+    public int getProgressPercentage() {
+        if (coupleTexte == null || coupleTexte.isEmpty()) {
+            return 0;
+        }
+
+        int totalCouples = coupleTexte.size();
+        int annotatedCouples = 0;
+
+        for (coupleTexte couple : coupleTexte) {
+            if (couple.getAnnotation() != null) {
+                annotatedCouples++;
+            }
+        }
+
+        return (int) Math.round((double) annotatedCouples / totalCouples * 100);
+    }
+
+    /**
+     * Retourne le statut d'avancement de la tâche
+     * @return Le statut ("Non commencé", "En cours", "Terminé")
+     */
+    public String getProgressStatus() {
+        int percentage = getProgressPercentage();
+
+        if (percentage == 0) {
+            return "Non commencé";
+        } else if (percentage == 100) {
+            return "Terminé";
+        } else {
+            return "En cours";
+        }
+    }
 }
