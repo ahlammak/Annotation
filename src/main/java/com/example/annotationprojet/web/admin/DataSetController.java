@@ -2,6 +2,7 @@ package com.example.annotationprojet.web.admin;
 import com.example.annotationprojet.Service.AffectationAnnotateurService;
 import com.example.annotationprojet.Service.AsyncDataSetService;
 import com.example.annotationprojet.Service.DataSetService;
+import com.example.annotationprojet.Service.ProgressService;
 import com.example.annotationprojet.entities.Annotateur;
 import com.example.annotationprojet.entities.DataSet;
 import com.example.annotationprojet.entities.Tache;
@@ -20,8 +21,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -42,6 +45,12 @@ public class DataSetController {
     @Autowired
     private TacheRepository tacheRepository;
 
+    @Autowired
+    private ProgressService progressService;
+
+    @Autowired
+    private AffectationAnnotateurService affectationAnnotateurService;
+
     @GetMapping("/admin/Dataset")
     public String datasetChoice() {
         return "admin/Dataset/DatasetChoice";
@@ -57,10 +66,10 @@ public class DataSetController {
 
     @GetMapping("/admin/listDatasets")
     public String listDatasets(Model model) {
-        // Récupérer tous les datasets pour la liste
+        // Récupérer tous les datasets pour l'affichage
         List<DataSet> datasets = dataSetService.getAllDataSets();
         model.addAttribute("datasets", datasets);
-        return "admin/Dataset/ListDatasets";
+        return "admin/Dataset/listDatasets";
     }
 
     @GetMapping("/admin/viewDataset")
@@ -68,7 +77,6 @@ public class DataSetController {
         try {
             System.out.println("Début de la méthode viewDataset avec id = " + id);
 
-            // Récupérer le dataset
             DataSet dataSet = dataSetService.getDataSetById(id);
             if (dataSet == null) {
                 System.out.println("Dataset introuvable avec id = " + id);
@@ -79,10 +87,8 @@ public class DataSetController {
 
             System.out.println("Dataset trouvé : " + dataSet.getNom());
 
-            // Ajouter le dataset au modèle
             model.addAttribute("dataset", dataSet);
 
-            // Récupérer les couples de textes associés au dataset
             List<coupleTexte> coupleTextes = new ArrayList<>();
             try {
                 coupleTextes = coupleTexteRepository.findByDataSet(dataSet);
@@ -93,7 +99,6 @@ public class DataSetController {
             }
             model.addAttribute("coupleTextes", coupleTextes);
 
-            // Récupérer tous les annotateurs actifs
             List<Annotateur> annotateurs = new ArrayList<>();
             try {
                 annotateurs = annotateurRepository.findByActiveTrue();
@@ -104,7 +109,6 @@ public class DataSetController {
             }
             model.addAttribute("annotateurs", annotateurs);
 
-            // Récupérer les annotateurs déjà affectés à des tâches pour ce dataset
             Set<Integer> annotateurIdsDejaAffectes = new HashSet<>();
             try {
                 List<Tache> taches = tacheRepository.findByData(dataSet);
@@ -124,6 +128,23 @@ public class DataSetController {
             }
 
             model.addAttribute("annotateurIdsDejaAffectes", annotateurIdsDejaAffectes);
+
+            // Calculer l'avancement du dataset
+            try {
+                // Récupérer les statistiques d'avancement
+                Map<String, Object> statistics = progressService.calculateDataSetStatistics(dataSet);
+                model.addAttribute("statistics", statistics);
+
+                // Récupérer l'avancement par annotateur
+                Map<Integer, Integer> progressByAnnotateur = progressService.calculateAnnotateurProgress(dataSet);
+                model.addAttribute("progressByAnnotateur", progressByAnnotateur);
+
+                System.out.println("Statistiques d'avancement calculées : " + statistics);
+            } catch (Exception e) {
+                System.err.println("Erreur lors du calcul de l'avancement : " + e.getMessage());
+                e.printStackTrace();
+            }
+
             System.out.println("Fin de la méthode viewDataset, retour de la vue");
 
             return "admin/Dataset/viewDataset";
@@ -174,13 +195,6 @@ public class DataSetController {
         return "redirect:/admin/listDatasets";
     }
 
-    /**
-     * Supprime un annotateur d'un dataset en supprimant toutes ses tâches associées
-     * @param datasetId L'ID du dataset
-     * @param annotateurId L'ID de l'annotateur à supprimer
-     * @param redirectAttributes Les attributs de redirection
-     * @return La redirection vers la page de détail du dataset
-     */
     @GetMapping("/admin/removeAnnotateurFromDataset")
     public String removeAnnotateurFromDataset(
             @RequestParam("datasetId") Integer datasetId,
@@ -189,7 +203,6 @@ public class DataSetController {
         try {
             System.out.println("Suppression de l'annotateur " + annotateurId + " du dataset " + datasetId);
 
-            // Récupérer le dataset
             DataSet dataset = dataSetService.getDataSetById(datasetId);
             if (dataset == null) {
                 redirectAttributes.addFlashAttribute("message", "Dataset introuvable.");
@@ -197,7 +210,6 @@ public class DataSetController {
                 return "redirect:/admin/Dataset";
             }
 
-            // Récupérer l'annotateur
             Annotateur annotateur = annotateurRepository.findById(annotateurId).orElse(null);
             if (annotateur == null) {
                 redirectAttributes.addFlashAttribute("message", "Annotateur introuvable.");
@@ -205,16 +217,41 @@ public class DataSetController {
                 return "redirect:/admin/viewDataset?id=" + datasetId;
             }
 
-            // Supprimer toutes les tâches de cet annotateur pour ce dataset
-            List<Tache> taches = tacheRepository.findByDataAndAnnotateur(dataset, annotateur);
-            System.out.println("Nombre de tâches à supprimer : " + (taches != null ? taches.size() : "null"));
 
-            if (taches != null && !taches.isEmpty()) {
-                tacheRepository.deleteAll(taches);
-                System.out.println("Tâches supprimées avec succès");
+            // Vérifier s'il y a d'autres annotateurs pour ce dataset
+            List<Tache> allTaches = tacheRepository.findByData(dataset);
+            Set<Integer> otherAnnotateurIds = new HashSet<>();
+
+            for (Tache tache : allTaches) {
+                if (tache.getAnnotateur() != null && !tache.getAnnotateur().getID().equals(annotateurId)) {
+                    otherAnnotateurIds.add(tache.getAnnotateur().getID());
+                }
             }
 
-            redirectAttributes.addFlashAttribute("message", "Annotateur " + annotateur.getPrenom() + " " + annotateur.getNom() + " supprimé du dataset avec succès.");
+            if (otherAnnotateurIds.isEmpty()) {
+                // Aucun autre annotateur disponible, on supprime simplement les tâches
+                List<Tache> taches = tacheRepository.findByDataAndAnnotateur(dataset, annotateur);
+                System.out.println("Nombre de tâches à supprimer : " + (taches != null ? taches.size() : "null"));
+
+                if (taches != null && !taches.isEmpty()) {
+                    tacheRepository.deleteAll(taches);
+                    System.out.println("Tâches supprimées avec succès");
+                }
+
+                redirectAttributes.addFlashAttribute("message", "Annotateur " + annotateur.getPrenom() + " " + annotateur.getNom() + " supprimé du dataset avec succès.");
+            } else {
+                // Réaffecter les tâches aux autres annotateurs
+                int reassignedCount = affectationAnnotateurService.reassignTasks(dataset, annotateur);
+
+                if (reassignedCount > 0) {
+                    redirectAttributes.addFlashAttribute("message", "Annotateur " + annotateur.getPrenom() + " " + annotateur.getNom() +
+                            " supprimé du dataset avec succès. " + reassignedCount + " tâches non annotées ont été réaffectées aux autres annotateurs.");
+                } else {
+                    redirectAttributes.addFlashAttribute("message", "Annotateur " + annotateur.getPrenom() + " " + annotateur.getNom() +
+                            " supprimé du dataset avec succès. Aucune tâche non annotée à réaffecter.");
+                }
+            }
+
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
 
         } catch (Exception e) {

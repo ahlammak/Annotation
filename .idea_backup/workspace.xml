@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0dcbf259-7f38-4040-8786-4926936eecbd" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.babelrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/postcss.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup-admin-ui.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/utils/TaskProgressUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/admin-dashboard.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/admin.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/tailwind.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/dist/adminDashboard.bundle.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/images/logo.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/admin/AdminDashboard.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/admin/components/Sidebar.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/admin/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/admin/styles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/creative-effects.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/admin-layout.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Config/CustomAuthenticationFailureHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Config/CustomAuthenticationFailureHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/AffectationAnnotateurService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/AffectationAnnotateurService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/AnnotationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/AnnotationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/AsyncDataSetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/AsyncDataSetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/DataSetServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/DataSetServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/ProgressService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/ProgressService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/entities/Tache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/entities/Tache.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/web/admin/AffectationController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/web/admin/DataSetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/web/admin/DataSetController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/web/admin/TaskAssignmentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/web/admin/TaskController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/web/user/AnnotationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/annotationprojet/web/user/AnnotationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/admin/Dataset/AssignTasks.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/admin/Dataset/AssignTasks.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/admin/Dataset/ListDatasets.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/admin/Dataset/ListDatasets.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/admin/Dataset/viewDataset.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/admin/Dataset/viewDataset.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/admin/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/admin/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/user/viewTask.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/user/viewTask.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2wic4k4mfBSsc8jvCnxgs1Lk1oG" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.AnnotationProjetApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ahlam/IdeaProjects/AnnotationProjet/src/main/java/com/example/annotationprojet/Service&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ahlam\IdeaProjects\AnnotationProjet\src\main\java\com\example\annotationprojet\Service" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="AnnotationProjetApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="AnnotationProjet" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.annotationprojet.AnnotationProjetApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.23774.435" />
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-IU-251.23774.435" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0dcbf259-7f38-4040-8786-4926936eecbd" name="Changes" comment="" />
+      <created>1746527647042</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746527647042</updated>
+      <workItem from="1746527648261" duration="110000" />
+      <workItem from="1746527799540" duration="1099000" />
+      <workItem from="1746530123885" duration="29000" />
+      <workItem from="1746530171628" duration="7048000" />
+      <workItem from="1746540378667" duration="927000" />
+      <workItem from="1746541325669" duration="8000" />
+      <workItem from="1746541355219" duration="202000" />
+      <workItem from="1746541586435" duration="217000" />
+      <workItem from="1746541901548" duration="12547000" />
+      <workItem from="1746564323552" duration="563000" />
+      <workItem from="1746564953653" duration="133000" />
+      <workItem from="1746565691332" duration="363000" />
+      <workItem from="1746566194776" duration="339000" />
+      <workItem from="1746566692174" duration="45000" />
+      <workItem from="1746566769331" duration="212000" />
+      <workItem from="1746567049928" duration="735000" />
+      <workItem from="1746567844222" duration="464000" />
+      <workItem from="1746575642253" duration="1263000" />
+      <workItem from="1746576946889" duration="1050000" />
+      <workItem from="1746578031862" duration="358000" />
+      <workItem from="1746578485597" duration="84000" />
+      <workItem from="1746578588847" duration="28000" />
+      <workItem from="1746578645638" duration="588000" />
+      <workItem from="1746579514960" duration="116000" />
+      <workItem from="1746579678037" duration="71000" />
+      <workItem from="1746579809542" duration="90000" />
+      <workItem from="1746618849067" duration="1194000" />
+      <workItem from="1746620176086" duration="124000" />
+      <workItem from="1746620398671" duration="4335000" />
+      <workItem from="1746624815666" duration="180000" />
+      <workItem from="1746625015280" duration="47000" />
+      <workItem from="1746625093749" duration="1481000" />
+      <workItem from="1746626607067" duration="1112000" />
+      <workItem from="1746627785394" duration="3488000" />
+      <workItem from="1746636891236" duration="27000" />
+      <workItem from="1746636946848" duration="10373000" />
+      <workItem from="1746702839157" duration="6602000" />
+      <workItem from="1746737493790" duration="1270000" />
+      <workItem from="1746788052704" duration="6655000" />
+      <workItem from="1746795634282" duration="11744000" />
+      <workItem from="1746816954980" duration="16053000" />
+      <workItem from="1746879243787" duration="26271000" />
+      <workItem from="1746956993940" duration="320000" />
+      <workItem from="1746957890834" duration="2128000" />
+      <workItem from="1746966314535" duration="5315000" />
+      <workItem from="1747053548992" duration="3934000" />
+      <workItem from="1747075351228" duration="14092000" />
+      <workItem from="1747150536120" duration="3040000" />
+      <workItem from="1747338166697" duration="3579000" />
+      <workItem from="1747491562420" duration="217000" />
+      <workItem from="1747491814970" duration="429000" />
+      <workItem from="1747515013310" duration="3355000" />
+      <workItem from="1747578421467" duration="925000" />
+      <workItem from="1747579389629" duration="6124000" />
+      <workItem from="1747590259963" duration="3372000" />
+      <workItem from="1747594259652" duration="1542000" />
+      <workItem from="1747596347932" duration="363000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/example/annotationprojet/Service/AsyncDataSetService.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

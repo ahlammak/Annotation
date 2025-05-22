@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotations du Dataset</title>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="/css/sidebar-navbar.css">
+    <style>
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+            transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        .text-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .class-btn {
+            margin: 5px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        .class-btn.selected {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .annotation-row {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 0;
+        }
+        .annotation-row:last-child {
+            border-bottom: none;
+        }
+        .validation-message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .validation-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .validation-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .annotateur-info {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content1" class="container py-5">
+    <!-- Messages d'alerte -->
+    <div th:if="${message}" th:class="${'alert ' + alertClass}" role="alert">
+        <i class="bi" th:classappend="${alertClass == 'alert-success' ? 'bi-check-circle' : 'bi-exclamation-triangle'}"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Titre et bouton de retour -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Annotations du Dataset</h3>
+        <a th:href="@{/admin/viewDataset(id=${dataset.ID})}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour au dataset
+        </a>
+    </div>
+
+    <!-- Informations du dataset -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-database me-2"></i>
+                <span th:text="${dataset.nom}">Nom du Dataset</span>
+            </h5>
+            <span class="badge bg-primary" th:text="${annotatedCouples.size() + ' annotations'}">0 annotations</span>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Description:</div>
+                <div class="col-md-9" th:text="${dataset.description}">Description du dataset</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Classes disponibles:</div>
+                <div class="col-md-9">
+                    <div th:if="${classes != null && !classes.isEmpty()}">
+                        <span th:each="classe : ${classes}" class="badge bg-secondary me-2" th:text="${classe.nomClasse}"></span>
+                    </div>
+                    <div th:if="${classes == null || classes.isEmpty()}" class="text-muted">
+                        Aucune classe définie
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des annotations -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Liste des annotations</h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${annotatedCouples == null || annotatedCouples.isEmpty()}" class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i> Aucune annotation trouvée pour ce dataset.
+            </div>
+
+            <div th:if="${annotatedCouples != null && !annotatedCouples.isEmpty()}">
+                <div class="annotation-row" th:each="couple : ${annotatedCouples}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Texte 1</h6>
+                            <div class="text-card" th:text="${couple.texte1}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Texte 2</h6>
+                            <div class="text-card" th:text="${couple.texte2}"></div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="annotateur-info">
+                                <strong>Annotateur:</strong>
+                                <span th:if="${couple.annotation != null && couple.annotation.annotateur != null}"
+                                      th:text="${couple.annotation.annotateur.prenom + ' ' + couple.annotation.annotateur.nom}">
+                                </span>
+                                <span th:unless="${couple.annotation != null && couple.annotation.annotateur != null}">
+                                    Non spécifié
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="annotateur-info">
+                                <strong>ID Couple:</strong> <span th:text="${couple.ID}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Classe choisie</h6>
+                            <div class="d-flex flex-wrap" th:attr="data-couple-id=${couple.ID}">
+                                <button th:each="classe : ${classes}"
+                                        th:text="${classe.nomClasse}"
+                                        th:class="${couple.annotation != null && couple.annotation.typeChoisie == classe.nomClasse ? 'btn btn-sm class-btn selected' : 'btn btn-sm btn-outline-primary class-btn'}"
+                                        th:attr="data-class=${classe.nomClasse}"
+                                        onclick="selectClass(this)">
+                                </button>
+                            </div>
+                            <div class="mt-2">
+                                <button class="btn btn-primary btn-sm" onclick="saveAnnotation(this)">
+                                    <i class="bi bi-save"></i> Enregistrer la modification
+                                </button>
+                                <div class="validation-message mt-2" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="/js/sidebar-navbar-template.js"></script>
+</body>
+</html>

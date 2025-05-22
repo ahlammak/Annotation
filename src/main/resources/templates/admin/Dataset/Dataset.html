@@ -2,196 +2,585 @@
 <html lang="fr"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="template1">
+      layout:decorate="~{admin-layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un Dataset</title>
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <th:block layout:fragment="css">
     <style>
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
-            transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+        /* Variables */
+        :root {
+            --primary-color: #4F46E5; /* Indigo */
+            --primary-light: #818CF8;
+            --primary-dark: #3730A3;
+            --secondary-color: #0EA5E9; /* Sky blue */
+            --secondary-light: #7DD3FC;
+            --secondary-dark: #0369A1;
+            --success-color: #10B981; /* Emerald */
+            --warning-color: #F59E0B; /* Amber */
+            --danger-color: #EF4444;  /* Red */
+            --card-radius: 15px;
+            --button-radius: 8px;
         }
 
-        .card:hover {
-            transform: scale(1.01);
-            box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+        /* Container */
+        .container-custom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: none;
         }
 
         .card-header {
-            background-color: #4e73df;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
-            border-radius: 15px 15px 0 0 !important;
+            padding: 1.25rem 1.5rem;
             font-weight: 600;
-            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            border-bottom: none;
         }
 
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form */
         .form-label {
             font-weight: 500;
-            margin-top: 10px;
+            margin-bottom: 0.5rem;
+            color: #374151;
         }
 
-        .btn-primary {
-            background-color: #4e73df;
-            border-color: #4e73df;
-        }
-
-        .btn-primary:hover {
-            background-color: #2e59d9;
-            border-color: #2e59d9;
-        }
-
-        .btn-success {
-            background-color: #1cc88a;
-            border-color: #1cc88a;
-        }
-
-        .btn-success:hover {
-            background-color: #17a673;
-            border-color: #17a673;
+        .form-control {
+            border-radius: var(--button-radius);
+            border: 1px solid #D1D5DB;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus {
-            border-color: #4e73df;
-            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        .file-upload {
-            border: 2px dashed #4e73df;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            background-color: #f8f9fc;
+        .form-select {
+            border-radius: var(--button-radius);
+            border: 1px solid #D1D5DB;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
-        .file-upload i {
-            font-size: 48px;
-            color: #4e73df;
-            margin-bottom: 15px;
+        .form-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        .file-upload-input {
-            display: none;
-        }
-
-        .file-upload-label {
-            cursor: pointer;
-            display: block;
-            margin-bottom: 0;
-        }
-
-        .file-name {
-            margin-top: 10px;
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 0.75rem 1.5rem;
             font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: #4B5563;
+            border: 1px solid #D1D5DB;
+            border-radius: var(--button-radius);
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #B91C1C 100%);
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: #f1f5f9;
+            color: #475569;
+            border-radius: var(--button-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-button:hover {
+            background-color: #e2e8f0;
+            color: #334155;
+            transform: translateY(-2px);
+        }
+
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+
+        /* File Input */
+        .file-input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed #D1D5DB;
+            border-radius: var(--card-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .file-input-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .file-input-text {
+            font-weight: 500;
+            color: #4B5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-input-subtext {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Classes Section */
+        .classes-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .classes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .classes-title {
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .add-class-btn {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .add-class-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .add-class-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .class-item {
+            display: flex;
+            align-items: center;
+            background-color: #F9FAFB;
+            border-radius: var(--button-radius);
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .class-item:hover {
+            background-color: #F3F4F6;
+        }
+
+        .class-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+
+        .class-name {
+            flex: 1;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .class-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .class-action-btn {
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.25rem;
+            border-radius: 4px;
+        }
+
+        .class-action-btn:hover {
+            color: var(--primary-color);
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .class-action-btn.delete:hover {
+            color: var(--danger-color);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: var(--card-radius);
+            border: none;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-bottom: none;
+            border-top-left-radius: var(--card-radius);
+            border-top-right-radius: var(--card-radius);
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: none;
+            padding: 1rem 1.5rem 1.5rem;
+        }
+
+        /* Color Picker */
+        .color-picker-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .color-option:hover, .color-option.selected {
+            transform: scale(1.1);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary-color);
         }
     </style>
+    </th:block>
 </head>
 <body>
-<div layout:fragment="content1" class="container py-5">
-    <!-- Messages d'alerte -->
-    <div th:if="${message}" th:class="${'alert ' + alertClass}" role="alert">
-        <i class="bi" th:classappend="${alertClass == 'alert-success' ? 'bi-check-circle' : 'bi-exclamation-triangle'}"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <!-- En-tête avec titre et bouton de retour -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Ajouter un Dataset</h3>
-        <div>
-            <a th:href="@{/admin/Dataset}" class="btn btn-secondary me-2">
-                <i class="bi bi-arrow-left"></i> Retour au choix
-            </a>
-            <a th:href="@{/admin/admin}" class="btn btn-secondary">
-                <i class="bi bi-house"></i> Tableau de bord
-            </a>
-        </div>
-    </div>
+<div layout:fragment="content">
+    <div class="container-custom">
+        <!-- Bouton de retour -->
+        <a href="/admin/Dataset" class="back-button">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
 
-    <div class="row">
-        <!-- Formulaire unique d'ajout de dataset avec importation de fichier -->
-        <div class="col-md-10 mx-auto mb-4">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-database-add me-2"></i>Ajouter un Dataset</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/importDataset}">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="nom" class="form-label">Nom du Dataset</label>
-                                    <input type="text" class="form-control" id="nom" name="nom" placeholder="Entrez le nom du dataset" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Décrivez le dataset"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="classes" class="form-label">Classes (optionnel)</label>
-                                    <input type="text" class="form-control" id="classes" name="classes" placeholder="Entrez les classes séparées par des virgules">
-                                    <div class="form-text">Ces classes seront utilisées pour l'annotation des textes.</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="file-upload h-100 d-flex flex-column justify-content-center">
-                                    <i class="bi bi-file-earmark-arrow-up"></i>
-                                    <h5>Importer un fichier CSV ou Excel</h5>
-                                    <p class="text-muted">Le fichier doit contenir deux colonnes (t1, t2)</p>
-                                    <p class="text-warning"><i class="bi bi-exclamation-triangle"></i> Taille maximale: 400 MB</p>
-                                    <label for="file-upload-input" class="file-upload-label">
-                                        <span class="btn btn-primary">Parcourir les fichiers</span>
-                                        <input id="file-upload-input" class="file-upload-input" type="file" name="file" accept=".csv,.xlsx,.xls" onchange="updateFileInfo(this)" required>
-                                    </label>
-                                    <p id="file-name" class="file-name mt-2">Aucun fichier sélectionné</p>
-                                    <p id="file-size" class="text-muted"></p>
-                                </div>
-                            </div>
+        <div class="card">
+            <div class="card-header">
+                Ajouter un nouveau Dataset
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/saveDataset}" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom du Dataset</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="file-input-container">
+                        <label for="file" class="file-input-label">
+                            <i class="bi bi-cloud-upload file-input-icon"></i>
+                            <span class="file-input-text">Glissez-déposez votre fichier ici</span>
+                            <span class="file-input-subtext">ou cliquez pour sélectionner un fichier (CSV, Excel)</span>
+                        </label>
+                        <input type="file" class="file-input" id="file" name="file" accept=".csv,.xlsx,.xls" required>
+                    </div>
+
+                    <!-- Section des classes -->
+                    <div class="classes-section">
+                        <div class="classes-header">
+                            <h3 class="classes-title">Classes d'annotation</h3>
+                            <button type="button" class="add-class-btn" data-bs-toggle="modal" data-bs-target="#addClassModal">
+                                <i class="bi bi-plus-lg"></i> Ajouter une classe
+                            </button>
                         </div>
-                        <div class="d-grid gap-2 mt-3">
-                            <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Ajouter le Dataset</button>
+                        <div id="classes-container">
+                            <!-- Les classes seront ajoutées ici dynamiquement -->
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-secondary me-2" onclick="window.location.href='/admin/Dataset'">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-
+    <!-- Modal pour ajouter une classe -->
+    <div class="modal fade" id="addClassModal" tabindex="-1" aria-labelledby="addClassModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addClassModalLabel">Ajouter une classe</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="className" class="form-label">Nom de la classe</label>
+                        <input type="text" class="form-control" id="className" placeholder="Entrez le nom de la classe">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Couleur</label>
+                        <div class="color-picker-container" id="colorPicker">
+                            <div class="color-option" style="background-color: #EF4444;" data-color="#EF4444"></div>
+                            <div class="color-option" style="background-color: #F59E0B;" data-color="#F59E0B"></div>
+                            <div class="color-option" style="background-color: #10B981;" data-color="#10B981"></div>
+                            <div class="color-option" style="background-color: #0EA5E9;" data-color="#0EA5E9"></div>
+                            <div class="color-option" style="background-color: #4F46E5;" data-color="#4F46E5"></div>
+                            <div class="color-option" style="background-color: #8B5CF6;" data-color="#8B5CF6"></div>
+                            <div class="color-option" style="background-color: #EC4899;" data-color="#EC4899"></div>
+                            <div class="color-option" style="background-color: #6B7280;" data-color="#6B7280"></div>
+                        </div>
+                        <input type="hidden" id="selectedColor" value="#4F46E5">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="addClassBtn">Ajouter</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script>
-    function updateFileInfo(input) {
-        if (input.files[0]) {
-            const file = input.files[0];
-            const fileName = file.name;
-            const fileSize = file.size;
+<th:block layout:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de l'upload de fichier
+            const fileInput = document.getElementById('file');
+            const fileInputLabel = document.querySelector('.file-input-label');
+            const fileInputText = document.querySelector('.file-input-text');
+            const fileInputSubtext = document.querySelector('.file-input-subtext');
 
-            // Afficher le nom du fichier
-            document.getElementById('file-name').textContent = fileName;
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+                    fileInputText.textContent = fileName;
+                    fileInputSubtext.textContent = 'Fichier sélectionné';
+                    fileInputLabel.style.borderColor = 'var(--success-color)';
+                    fileInputLabel.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+                } else {
+                    fileInputText.textContent = 'Glissez-déposez votre fichier ici';
+                    fileInputSubtext.textContent = 'ou cliquez pour sélectionner un fichier (CSV, Excel)';
+                    fileInputLabel.style.borderColor = '#D1D5DB';
+                    fileInputLabel.style.backgroundColor = '';
+                }
+            });
 
-            // Afficher la taille du fichier
-            const fileSizeInMB = (fileSize / (1024 * 1024)).toFixed(2);
-            document.getElementById('file-size').textContent = `Taille: ${fileSizeInMB} MB`;
+            // Gestion du drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileInputLabel.addEventListener(eventName, preventDefaults, false);
+            });
 
-            // Avertir si le fichier est trop volumineux
-            if (fileSize > 400 * 1024 * 1024) {
-                document.getElementById('file-size').classList.add('text-danger');
-                document.getElementById('file-size').classList.remove('text-muted');
-                document.getElementById('file-size').innerHTML = `<i class="bi bi-exclamation-triangle"></i> Attention: Ce fichier est trop volumineux (${fileSizeInMB} MB). La taille maximale est de 400 MB.`;
-            } else {
-                document.getElementById('file-size').classList.add('text-muted');
-                document.getElementById('file-size').classList.remove('text-danger');
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
-        } else {
-            document.getElementById('file-name').textContent = 'Aucun fichier sélectionné';
-            document.getElementById('file-size').textContent = '';
-        }
-    }
-</script>
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileInputLabel.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileInputLabel.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                fileInputLabel.style.borderColor = 'var(--primary-color)';
+                fileInputLabel.style.backgroundColor = 'rgba(99, 102, 241, 0.05)';
+            }
+
+            function unhighlight() {
+                fileInputLabel.style.borderColor = '#D1D5DB';
+                fileInputLabel.style.backgroundColor = '';
+            }
+
+            fileInputLabel.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+
+                if (files.length > 0) {
+                    const fileName = files[0].name;
+                    fileInputText.textContent = fileName;
+                    fileInputSubtext.textContent = 'Fichier sélectionné';
+                    fileInputLabel.style.borderColor = 'var(--success-color)';
+                    fileInputLabel.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+                }
+            }
+
+            // Gestion des classes
+            const classesContainer = document.getElementById('classes-container');
+            const addClassBtn = document.getElementById('addClassBtn');
+            const classNameInput = document.getElementById('className');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const selectedColorInput = document.getElementById('selectedColor');
+            let classCounter = 0;
+
+            // Sélection de couleur
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    colorOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedColorInput.value = this.dataset.color;
+                });
+            });
+
+            // Sélectionner la première couleur par défaut
+            colorOptions[0].classList.add('selected');
+
+            // Ajouter une classe
+            addClassBtn.addEventListener('click', function() {
+                const className = classNameInput.value.trim();
+                const color = selectedColorInput.value;
+
+                if (className) {
+                    addClassItem(className, color);
+
+                    // Réinitialiser le formulaire
+                    classNameInput.value = '';
+                    colorOptions.forEach(opt => opt.classList.remove('selected'));
+                    colorOptions[0].classList.add('selected');
+                    selectedColorInput.value = colorOptions[0].dataset.color;
+
+                    // Fermer le modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addClassModal'));
+                    modal.hide();
+                }
+            });
+
+            function addClassItem(name, color) {
+                const classId = 'class_' + classCounter++;
+
+                const classItem = document.createElement('div');
+                classItem.className = 'class-item';
+                classItem.innerHTML = `
+                    <div class="class-color" style="background-color: ${color}"></div>
+                    <div class="class-name">${name}</div>
+                    <div class="class-actions">
+                        <button type="button" class="class-action-btn delete" onclick="removeClassItem('${classId}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" name="classes[${classCounter-1}].nom" value="${name}">
+                    <input type="hidden" name="classes[${classCounter-1}].couleur" value="${color}">
+                `;
+                classItem.id = classId;
+
+                classesContainer.appendChild(classItem);
+            }
+
+            // Fonction globale pour supprimer une classe
+            window.removeClassItem = function(id) {
+                const classItem = document.getElementById(id);
+                if (classItem) {
+                    classItem.remove();
+                }
+            };
+        });
+    </script>
+</th:block>
 </body>
 </html>

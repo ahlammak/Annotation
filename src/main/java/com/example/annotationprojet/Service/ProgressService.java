@@ -19,126 +19,143 @@ public class ProgressService {
     @Autowired
     private TacheRepository tacheRepository;
 
-    public int calculateDataSetProgress(DataSet dataSet) {
-        if (dataSet == null) {
-            return 0;
-        }
+    /**
+     * Classe utilitaire pour stocker les statistiques d'un dataset
+     */
+    private class DatasetStats {
+        int totalCouples = 0;
+        int annotatedCouples = 0;
+        Set<Integer> uniqueAnnotateurs = new java.util.HashSet<>();
+        Map<Integer, AnnotateurStats> annotateurStatsMap = new HashMap<>();
 
-        List<Tache> taches = tacheRepository.findByData(dataSet);
-        if (taches == null || taches.isEmpty()) {
-            return 0;
+        /**
+         * Calcule le pourcentage de progression
+         */
+        int getProgressPercentage() {
+            return totalCouples > 0 ? (int) Math.round((double) annotatedCouples / totalCouples * 100) : 0;
         }
+    }
 
+    /**
+     * Classe utilitaire pour stocker les statistiques d'un annotateur
+     */
+    private class AnnotateurStats {
         int totalCouples = 0;
         int annotatedCouples = 0;
 
-        for (Tache tache : taches) {
-            List<coupleTexte> couples = tache.getCoupleTexte();
-            if (couples != null) {
-                totalCouples += couples.size();
-                for (coupleTexte couple : couples) {
-                    if (couple.getAnnotation() != null) {
-                        annotatedCouples++;
-                    }
-                }
-            }
+        /**
+         * Calcule le pourcentage de progression
+         */
+        int getProgressPercentage() {
+            return totalCouples > 0 ? (int) Math.round((double) annotatedCouples / totalCouples * 100) : 0;
         }
-        if (totalCouples == 0) {
-            return 0;
+
+        /**
+         * Fusionne avec d'autres statistiques
+         */
+        void merge(AnnotateurStats other) {
+            int thisProgress = getProgressPercentage();
+            int otherProgress = other.getProgressPercentage();
+
+            // Moyenne pondérée des pourcentages de progression
+            totalCouples += other.totalCouples;
+            annotatedCouples += other.annotatedCouples;
         }
-        return (int) Math.round((double) annotatedCouples / totalCouples * 100);
     }
-    public Map<Integer, Integer> calculateAnnotateurProgress(DataSet dataSet) {
-        Map<Integer, Integer> progressByAnnotateur = new HashMap<>();
-        
+
+    /**
+     * Collecte les statistiques d'un dataset
+     */
+    private DatasetStats collectDatasetStats(DataSet dataSet) {
+        DatasetStats stats = new DatasetStats();
+
         if (dataSet == null) {
-            return progressByAnnotateur;
+            return stats;
         }
 
         List<Tache> taches = tacheRepository.findByData(dataSet);
         if (taches == null || taches.isEmpty()) {
-            return progressByAnnotateur;
+            return stats;
         }
 
         for (Tache tache : taches) {
+            // Collecter les annotateurs uniques
             Annotateur annotateur = tache.getAnnotateur();
-            if (annotateur == null) {
-                continue;
-            }
+            if (annotateur != null) {
+                int annotateurId = annotateur.getID();
+                stats.uniqueAnnotateurs.add(annotateurId);
 
-            int annotateurId = annotateur.getID();
-            List<coupleTexte> couples = tache.getCoupleTexte();
-            
-            if (couples == null || couples.isEmpty()) {
-                continue;
-            }
-
-            int totalCouples = couples.size();
-            int annotatedCouples = 0;
-            
-            for (coupleTexte couple : couples) {
-                if (couple.getAnnotation() != null) {
-                    annotatedCouples++;
+                // Initialiser les statistiques de l'annotateur si nécessaire
+                if (!stats.annotateurStatsMap.containsKey(annotateurId)) {
+                    stats.annotateurStatsMap.put(annotateurId, new AnnotateurStats());
                 }
             }
 
-            int progress = (int) Math.round((double) annotatedCouples / totalCouples * 100);
+            // Collecter les statistiques des couples de texte
+            List<coupleTexte> couples = tache.getCoupleTexte();
+            if (couples != null) {
+                stats.totalCouples += couples.size();
 
-            if (progressByAnnotateur.containsKey(annotateurId)) {
-                int currentProgress = progressByAnnotateur.get(annotateurId);
-                progressByAnnotateur.put(annotateurId, (currentProgress + progress) / 2);
-            } else {
-                progressByAnnotateur.put(annotateurId, progress);
+                for (coupleTexte couple : couples) {
+                    if (couple.getAnnotation() != null) {
+                        stats.annotatedCouples++;
+
+                        // Mettre à jour les statistiques de l'annotateur
+                        if (annotateur != null) {
+                            AnnotateurStats annotateurStats = stats.annotateurStatsMap.get(annotateur.getID());
+                            annotateurStats.annotatedCouples++;
+                        }
+                    }
+                }
+
+                // Mettre à jour le nombre total de couples pour l'annotateur
+                if (annotateur != null && couples.size() > 0) {
+                    AnnotateurStats annotateurStats = stats.annotateurStatsMap.get(annotateur.getID());
+                    annotateurStats.totalCouples += couples.size();
+                }
             }
+        }
+
+        return stats;
+    }
+
+    /**
+     * Calcule le pourcentage de progression d'un dataset
+     */
+    public int calculateDataSetProgress(DataSet dataSet) {
+        return collectDatasetStats(dataSet).getProgressPercentage();
+    }
+
+    /**
+     * Calcule la progression par annotateur pour un dataset
+     */
+    public Map<Integer, Integer> calculateAnnotateurProgress(DataSet dataSet) {
+        DatasetStats stats = collectDatasetStats(dataSet);
+        Map<Integer, Integer> progressByAnnotateur = new HashMap<>();
+
+        for (Map.Entry<Integer, AnnotateurStats> entry : stats.annotateurStatsMap.entrySet()) {
+            progressByAnnotateur.put(entry.getKey(), entry.getValue().getProgressPercentage());
         }
 
         return progressByAnnotateur;
     }
 
+    /**
+     * Calcule les statistiques complètes d'un dataset
+     */
     public Map<String, Object> calculateDataSetStatistics(DataSet dataSet) {
+        DatasetStats stats = collectDatasetStats(dataSet);
         Map<String, Object> statistics = new HashMap<>();
-        
-        if (dataSet == null) {
-            return statistics;
-        }
 
-        List<Tache> taches = tacheRepository.findByData(dataSet);
-        if (taches == null || taches.isEmpty()) {
-            statistics.put("totalTaches", 0);
-            statistics.put("totalCouples", 0);
-            statistics.put("annotatedCouples", 0);
-            statistics.put("progressPercentage", 0);
-            statistics.put("totalAnnotateurs", 0);
-            return statistics;
-        }
+        // Nombre de tâches
+        List<Tache> taches = dataSet != null ? tacheRepository.findByData(dataSet) : null;
+        int tachesCount = (taches != null) ? taches.size() : 0;
 
-        int totalCouples = 0;
-        int annotatedCouples = 0;
-        Set<Integer> uniqueAnnotateurs = new java.util.HashSet<>();
-
-        for (Tache tache : taches) {
-            if (tache.getAnnotateur() != null) {
-                uniqueAnnotateurs.add(tache.getAnnotateur().getID());
-            }
-
-            List<coupleTexte> couples = tache.getCoupleTexte();
-            if (couples != null) {
-                totalCouples += couples.size();
-                for (coupleTexte couple : couples) {
-                    if (couple.getAnnotation() != null) {
-                        annotatedCouples++;
-                    }
-                }
-            }
-        }
-
-        int progressPercentage = totalCouples > 0 ? (int) Math.round((double) annotatedCouples / totalCouples * 100) : 0;
-
-        statistics.put("totalTaches", taches.size());
-        statistics.put("totalCouples", totalCouples);
-        statistics.put("annotatedCouples", annotatedCouples);
-        statistics.put("progressPercentage", progressPercentage);
-        statistics.put("totalAnnotateurs", uniqueAnnotateurs.size());
+        statistics.put("totalTaches", tachesCount);
+        statistics.put("totalCouples", stats.totalCouples);
+        statistics.put("annotatedCouples", stats.annotatedCouples);
+        statistics.put("progressPercentage", stats.getProgressPercentage());
+        statistics.put("totalAnnotateurs", stats.uniqueAnnotateurs.size());
 
         return statistics;
     }

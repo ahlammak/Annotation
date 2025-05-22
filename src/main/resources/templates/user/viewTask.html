@@ -111,9 +111,9 @@
                     <div class="col-md-6">
                         <h5><i class="bi bi-graph-up me-2"></i>Progression</h5>
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" 
-                                 th:style="'width: ' + ${progress} + '%;'" 
-                                 th:aria-valuenow="${progress}" 
+                            <div class="progress-bar" role="progressbar"
+                                 th:style="'width: ' + ${progress} + '%;'"
+                                 th:aria-valuenow="${progress}"
                                  aria-valuemin="0" aria-valuemax="100"
                                  th:text="${progress} + '%'">
                             </div>
@@ -146,8 +146,8 @@
                         <h5><i class="bi bi-tag me-2"></i>Classes disponibles</h5>
                         <div class="classes-container">
                             <div th:each="classe : ${classes}" class="d-inline-block">
-                                <button th:text="${classe.nomClasse}" 
-                                        th:data-class="${classe.nomClasse}" 
+                                <button th:text="${classe.nomClasse}"
+                                        th:data-class="${classe.nomClasse}"
                                         class="btn btn-outline-primary class-btn">
                                 </button>
                             </div>
@@ -187,33 +187,33 @@
             let currentIndex = 0;
             let coupleIds = [];
             let selectedClass = null;
-            
+
             // Récupérer tous les IDs des couples
             const coupleItems = document.querySelectorAll('#couplesList li');
             coupleItems.forEach(item => {
                 coupleIds.push(item.getAttribute('data-id'));
             });
-            
+
             // Fonction pour charger les détails d'un couple
             function loadCoupleDetails(index) {
                 if (index < 0 || index >= coupleIds.length) {
                     return;
                 }
-                
+
                 const coupleId = coupleIds[index];
-                
+
                 // Mettre à jour l'index affiché
                 document.getElementById('currentCoupleIndex').textContent = index + 1;
-                
+
                 // Réinitialiser la sélection de classe
                 selectedClass = null;
                 document.querySelectorAll('.class-btn').forEach(btn => {
                     btn.classList.remove('selected');
                 });
-                
+
                 // Masquer le message de validation
                 document.getElementById('validationMessage').style.display = 'none';
-                
+
                 // Récupérer les détails du couple
                 fetch(`/user/getCoupleDetails?coupleId=${coupleId}`)
                     .then(response => response.json())
@@ -223,7 +223,7 @@
                             document.getElementById('coupleId').textContent = data.id;
                             document.getElementById('texte1').textContent = data.texte1;
                             document.getElementById('texte2').textContent = data.texte2;
-                            
+
                             // Si une annotation existe déjà, la sélectionner
                             if (data.annotation) {
                                 selectedClass = data.annotation;
@@ -233,7 +233,7 @@
                                     }
                                 });
                             }
-                            
+
                             // Mettre à jour l'état des boutons de navigation
                             document.getElementById('prevBtn').disabled = index === 0;
                             document.getElementById('nextBtn').disabled = index === coupleIds.length - 1;
@@ -246,21 +246,21 @@
                         showValidationMessage(false, 'Erreur de communication avec le serveur');
                     });
             }
-            
+
             // Fonction pour sauvegarder une annotation
             function saveAnnotation() {
                 const coupleId = coupleIds[currentIndex];
-                
+
                 if (!selectedClass) {
                     showValidationMessage(false, 'Veuillez sélectionner une classe');
                     return;
                 }
-                
+
                 // Préparer les données
                 const formData = new FormData();
                 formData.append('coupleId', coupleId);
                 formData.append('classeChoisie', selectedClass);
-                
+
                 // Envoyer la requête
                 fetch('/user/saveAnnotation', {
                     method: 'POST',
@@ -270,7 +270,7 @@
                 .then(data => {
                     if (data.success) {
                         showValidationMessage(true, 'Annotation sauvegardée avec succès');
-                        
+
                         // Mettre à jour la barre de progression
                         if (data.progress !== undefined) {
                             const progressBar = document.querySelector('.progress-bar');
@@ -278,7 +278,7 @@
                             progressBar.setAttribute('aria-valuenow', data.progress);
                             progressBar.textContent = data.progress + '%';
                         }
-                        
+
                         // Passer au couple suivant après un court délai
                         setTimeout(() => {
                             if (currentIndex < coupleIds.length - 1) {
@@ -295,7 +295,7 @@
                     showValidationMessage(false, 'Erreur de communication avec le serveur');
                 });
             }
-            
+
             // Fonction pour afficher un message de validation
             function showValidationMessage(success, message) {
                 const validationMessage = document.getElementById('validationMessage');
@@ -304,7 +304,7 @@
                 validationMessage.classList.add(success ? 'validation-success' : 'validation-error');
                 validationMessage.style.display = 'block';
             }
-            
+
             // Événements pour les boutons de navigation
             document.getElementById('prevBtn').addEventListener('click', function() {
                 if (currentIndex > 0) {
@@ -312,14 +312,14 @@
                     loadCoupleDetails(currentIndex);
                 }
             });
-            
+
             document.getElementById('nextBtn').addEventListener('click', function() {
                 if (currentIndex < coupleIds.length - 1) {
                     currentIndex++;
                     loadCoupleDetails(currentIndex);
                 }
             });
-            
+
             // Événement pour les boutons de classe
             document.querySelectorAll('.class-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -327,16 +327,16 @@
                     document.querySelectorAll('.class-btn').forEach(b => {
                         b.classList.remove('selected');
                     });
-                    
+
                     // Sélectionner le bouton cliqué
                     this.classList.add('selected');
                     selectedClass = this.getAttribute('data-class');
                 });
             });
-            
+
             // Événement pour le bouton de validation
             document.getElementById('validateBtn').addEventListener('click', saveAnnotation);
-            
+
             // Charger le premier couple au chargement de la page
             if (coupleIds.length > 0) {
                 loadCoupleDetails(currentIndex);

@@ -34,30 +34,30 @@ public class AnnotationController {
             if (tache == null) {
                 return "redirect:/user/tasks?error=task_not_found";
             }
-            
+
             // Récupérer l'utilisateur connecté
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             User user = userDetails.getUser();
-            
+
             // Vérifier que l'utilisateur est bien un annotateur
             if (!(user instanceof Annotateur)) {
                 return "redirect:/user/tasks?error=not_annotator";
             }
-            
+
             Annotateur annotateur = (Annotateur) user;
-            
+
             // Vérifier que la tâche appartient bien à l'annotateur
             if (!tache.getAnnotateur().getID().equals(annotateur.getID())) {
                 return "redirect:/user/tasks?error=not_your_task";
             }
-            
+
             // Récupérer les couples de textes
             List<coupleTexte> coupleTextes = annotationService.getCoupleTextesByTache(tache);
-            
+
             // Récupérer les classes disponibles
             List<Classes> classes = annotationService.getClassesByDataSet(tache.getData());
-            
+
             // Ajouter les données au modèle
             model.addAttribute("tache", tache);
             model.addAttribute("coupleTextes", coupleTextes);
@@ -65,7 +65,7 @@ public class AnnotationController {
             model.addAttribute("annotateur", annotateur);
             model.addAttribute("totalCouples", coupleTextes.size());
             model.addAttribute("progress", tache.getProgressPercentage());
-            
+
             return "user/viewTask";
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,7 +73,7 @@ public class AnnotationController {
             return "error/custom-error";
         }
     }
-    
+
     /**
      * Sauvegarde une annotation pour un couple de textes
      * @param coupleId L'ID du couple de textes
@@ -85,31 +85,31 @@ public class AnnotationController {
     public ResponseEntity<Map<String, Object>> saveAnnotation(
             @RequestParam("coupleId") Integer coupleId,
             @RequestParam("classeChoisie") String classeChoisie) {
-        
+
         Map<String, Object> response = new HashMap<>();
-        
+
         try {
             // Récupérer l'utilisateur connecté
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             User user = userDetails.getUser();
-            
+
             // Vérifier que l'utilisateur est bien un annotateur
             if (!(user instanceof Annotateur)) {
                 response.put("success", false);
                 response.put("message", "Vous n'êtes pas un annotateur");
                 return ResponseEntity.badRequest().body(response);
             }
-            
+
             Annotateur annotateur = (Annotateur) user;
-            
+
             // Sauvegarder l'annotation
             boolean success = annotationService.saveAnnotation(coupleId, classeChoisie, annotateur);
-            
+
             if (success) {
                 response.put("success", true);
                 response.put("message", "Annotation sauvegardée avec succès");
-                
+
                 // Récupérer le couple de textes pour obtenir la tâche
                 coupleTexte couple = annotationService.getCoupleTexteById(coupleId);
                 if (couple != null && couple.getTache() != null) {
@@ -120,7 +120,7 @@ public class AnnotationController {
                 response.put("success", false);
                 response.put("message", "Erreur lors de la sauvegarde de l'annotation");
             }
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,7 +129,7 @@ public class AnnotationController {
             return ResponseEntity.badRequest().body(response);
         }
     }
-    
+
     /**
      * Récupère les détails d'un couple de textes
      * @param coupleId L'ID du couple de textes
@@ -139,7 +139,7 @@ public class AnnotationController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getCoupleDetails(@RequestParam("coupleId") Integer coupleId) {
         Map<String, Object> response = new HashMap<>();
-        
+
         try {
             // Récupérer le couple de textes
             coupleTexte couple = annotationService.getCoupleTexteById(coupleId);
@@ -148,19 +148,19 @@ public class AnnotationController {
                 response.put("message", "Couple de textes non trouvé");
                 return ResponseEntity.badRequest().body(response);
             }
-            
+
             response.put("success", true);
             response.put("id", couple.getID());
             response.put("texte1", couple.getTexte1());
             response.put("texte2", couple.getTexte2());
-            
+
             // Ajouter l'annotation si elle existe
             if (couple.getAnnotation() != null) {
                 response.put("annotation", couple.getAnnotation().getTypeChoisie());
             } else {
                 response.put("annotation", null);
             }
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();

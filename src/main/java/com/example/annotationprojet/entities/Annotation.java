@@ -9,7 +9,7 @@ import lombok.*;
 @Entity @NoArgsConstructor @AllArgsConstructor @Getter @Setter @ToString @Builder
 public class Annotation {
     @Id
-    private int ID;
+    private Integer ID;
     private String typeChoisie;
     @OneToOne(mappedBy = "annotation")
     private coupleTexte coupleTexte;

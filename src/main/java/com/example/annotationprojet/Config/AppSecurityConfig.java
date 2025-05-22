@@ -59,8 +59,9 @@ public class AppSecurityConfig {
                 .authorizeHttpRequests(authz -> authz // Configure authorization for different URL patterns
                         .requestMatchers("/user/**").hasRole("USER") // Only allow users with the USER role for /user/** paths
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow users with the ADMIN role for /admin/** paths
-                        .requestMatchers("/webjars/**","/main.css", "/images/**", "/favicon.ico").permitAll() // Allow access to static resources
-                        .anyRequest().permitAll() // Allow all other requests without restriction
+                        .requestMatchers("/webjars/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() // Allow access to static resources
+                        .requestMatchers("/login", "/auth/**", "/", "/access-denied").permitAll() // Allow access to login and error pages
+                        .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .formLogin(form -> form // Configure login settings
                         .loginPage("/login") // Custom login page URL

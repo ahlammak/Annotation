@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accès Refusé</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .access-denied-container {
+            max-width: 600px;
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .access-denied-icon {
+            font-size: 5rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .access-denied-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .access-denied-message {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .btn-group {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="access-denied-container">
+        <i class="bi bi-shield-lock-fill access-denied-icon"></i>
+        <h1 class="access-denied-title">Accès Refusé</h1>
+        <div class="access-denied-message">
+            <p>Vous n'avez pas les autorisations nécessaires pour accéder à cette page.</p>
+            <p>Veuillez vous connecter avec un compte disposant des droits appropriés ou contacter l'administrateur.</p>
+        </div>
+        <div class="btn-group">
+            <a href="/login" class="btn btn-primary me-2">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+            </a>
+            <button onclick="window.history.back()" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Retour à la page précédente
+            </button>
+        </div>
+    </div>
+</body>
+</html>

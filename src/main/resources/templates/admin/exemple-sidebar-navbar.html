@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple Sidebar et Navbar</title>
+    <!-- Styles requis -->
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="/css/sidebar-navbar.css">
+    <style>
+        /* Styles spécifiques à cette page */
+        .content-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .page-header {
+            margin-bottom: 20px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .page-description {
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <!-- Conteneur principal où la sidebar et navbar seront injectées -->
+    <div id="app-container">
+        <!-- Votre contenu ici -->
+        <div class="container py-4">
+            <div class="content-card">
+                <div class="page-header">
+                    <h1 class="page-title">Exemple d'utilisation de la sidebar et navbar</h1>
+                    <p class="page-description">
+                        Cette page montre comment utiliser le fichier sidebar-navbar-template.js pour ajouter 
+                        facilement la sidebar et navbar à n'importe quelle page.
+                    </p>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>Comment ça marche :</strong>
+                    <ol>
+                        <li>Incluez les fichiers CSS nécessaires (sidebar-navbar.css)</li>
+                        <li>Créez un élément avec l'id "app-container"</li>
+                        <li>Placez votre contenu à l'intérieur de cet élément</li>
+                        <li>Incluez le script sidebar-navbar-template.js</li>
+                    </ol>
+                </div>
+                
+                <div class="mt-4">
+                    <h3>Votre contenu ici</h3>
+                    <p>
+                        Tout le contenu que vous placez à l'intérieur de l'élément avec l'id "app-container" 
+                        sera automatiquement intégré dans la structure avec sidebar et navbar.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts requis -->
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/sidebar-navbar-template.js"></script>
+</body>
+</html>

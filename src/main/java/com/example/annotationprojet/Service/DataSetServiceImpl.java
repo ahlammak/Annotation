@@ -137,90 +137,131 @@ public class DataSetServiceImpl implements DataSetService {
         }
     }
 
-    private void processCsvFile(File file, DataSet dataset, List<coupleTexte> coupleTextes, int maxRows) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean firstLine = true;
-            int rowCount = 0;
+    /**
+     * Interface pour les différents lecteurs de fichiers
+     */
+    private interface FileReader {
+        List<String[]> readFile(File file, int maxRows) throws IOException;
+    }
 
-            String separator = ",";
-            String headerLine = reader.readLine();
-            if (headerLine != null) {
-                if (headerLine.contains(";")) separator = ";";
-                else if (headerLine.contains("\t")) separator = "\t";
-            }
+    /**
+     * Lecteur de fichiers CSV
+     */
+    private class CsvFileReader implements FileReader {
+        @Override
+        public List<String[]> readFile(File file, int maxRows) throws IOException {
+            List<String[]> rows = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new java.io.FileReader(file))) {
+                String line;
+                boolean firstLine = true;
 
+                // Déterminer le séparateur
+                String separator = ",";
+                String headerLine = reader.readLine();
+                if (headerLine != null) {
+                    if (headerLine.contains(";")) separator = ";";
+                    else if (headerLine.contains("\t")) separator = "\t";
+                }
 
-            while ((line = reader.readLine()) != null && rowCount < maxRows) {
-                if (line.trim().isEmpty()) continue;
+                // Lire les lignes
+                while ((line = reader.readLine()) != null && rows.size() < maxRows) {
+                    if (line.trim().isEmpty()) continue;
 
-                String[] columns = line.split(separator);
-                if (columns.length >= 2) {
-                    String texte1 = columns[0].trim();
-                    String texte2 = columns[1].trim();
-
-                    if (!texte1.isEmpty() && !texte2.isEmpty()) {
-                        coupleTexte couple = new coupleTexte();
-                        couple.setTexte1(texte1);
-                        couple.setTexte2(texte2);
-                        couple.setDataSet(dataset);
-                        coupleTextes.add(couple);
-                        rowCount++;
+                    String[] columns = line.split(separator);
+                    if (columns.length >= 2) {
+                        rows.add(new String[] { columns[0].trim(), columns[1].trim() });
                     }
                 }
+
+                // Vérifier s'il reste des lignes non importées
+                if (reader.readLine() != null) {
+                    System.out.println("Limite de " + maxRows + " lignes atteinte. Les lignes restantes ne seront pas importées.");
+                }
+
+                System.out.println("Lu " + rows.size() + " lignes depuis le fichier CSV.");
             }
-
-
-            if (reader.readLine() != null) {
-                System.out.println("Limite de " + maxRows + " lignes atteinte. Les lignes restantes ne seront pas importées.");
-            }
-
-            System.out.println("Importé " + rowCount + " couples de textes depuis le fichier CSV.");
+            return rows;
         }
     }
 
-    private void processExcelFile(File file, DataSet dataset, List<coupleTexte> coupleTextes, int maxRows) throws IOException {
-        try (InputStream is = new FileInputStream(file);
-             Workbook workbook = WorkbookFactory.create(is)) {
+    /**
+     * Lecteur de fichiers Excel
+     */
+    private class ExcelFileReader implements FileReader {
+        @Override
+        public List<String[]> readFile(File file, int maxRows) throws IOException {
+            List<String[]> rows = new ArrayList<>();
+            try (InputStream is = new FileInputStream(file);
+                 Workbook workbook = WorkbookFactory.create(is)) {
 
-            Sheet sheet = workbook.getSheetAt(0);
-            boolean firstRow = true;
-            int rowCount = 0;
+                Sheet sheet = workbook.getSheetAt(0);
+                boolean firstRow = true;
+                int totalRows = sheet.getPhysicalNumberOfRows();
 
-            int totalRows = sheet.getPhysicalNumberOfRows();
+                for (Row row : sheet) {
+                    // Ignorer l'en-tête
+                    if (firstRow) {
+                        firstRow = false;
+                        continue;
+                    }
 
-            for (Row row : sheet) {
+                    // Vérifier si on a atteint la limite
+                    if (rows.size() >= maxRows) {
+                        System.out.println("Limite de " + maxRows + " lignes atteinte. " + (totalRows - maxRows - 1) + " lignes restantes ne seront pas importées.");
+                        break;
+                    }
 
-                if (firstRow) {
-                    firstRow = false;
-                    continue;
-                }
+                    Cell cell1 = row.getCell(0);
+                    Cell cell2 = row.getCell(1);
 
-                if (rowCount >= maxRows) {
-                    System.out.println("Limite de " + maxRows + " lignes atteinte. " + (totalRows - maxRows - 1) + " lignes restantes ne seront pas importées.");
-                    break;
-                }
+                    if (cell1 != null && cell2 != null) {
+                        String texte1 = getCellValueAsString(cell1);
+                        String texte2 = getCellValueAsString(cell2);
 
-                Cell cell1 = row.getCell(0);
-                Cell cell2 = row.getCell(1);
-
-                if (cell1 != null && cell2 != null) {
-                    String texte1 = getCellValueAsString(cell1);
-                    String texte2 = getCellValueAsString(cell2);
-
-                    if (!texte1.trim().isEmpty() && !texte2.trim().isEmpty()) {
-                        coupleTexte couple = new coupleTexte();
-                        couple.setTexte1(texte1);
-                        couple.setTexte2(texte2);
-                        couple.setDataSet(dataset);
-                        coupleTextes.add(couple);
-                        rowCount++;
+                        if (!texte1.trim().isEmpty() && !texte2.trim().isEmpty()) {
+                            rows.add(new String[] { texte1, texte2 });
+                        }
                     }
                 }
-            }
 
-            System.out.println("Importé " + rowCount + " couples de textes depuis le fichier Excel.");
+                System.out.println("Lu " + rows.size() + " lignes depuis le fichier Excel.");
+            }
+            return rows;
         }
+    }
+
+    /**
+     * Traite un fichier CSV
+     */
+    private void processCsvFile(File file, DataSet dataset, List<coupleTexte> coupleTextes, int maxRows) throws IOException {
+        processFile(file, dataset, coupleTextes, maxRows, new CsvFileReader());
+    }
+
+    /**
+     * Traite un fichier Excel
+     */
+    private void processExcelFile(File file, DataSet dataset, List<coupleTexte> coupleTextes, int maxRows) throws IOException {
+        processFile(file, dataset, coupleTextes, maxRows, new ExcelFileReader());
+    }
+
+    /**
+     * Méthode générique pour traiter un fichier
+     */
+    private void processFile(File file, DataSet dataset, List<coupleTexte> coupleTextes, int maxRows, FileReader fileReader) throws IOException {
+        List<String[]> rows = fileReader.readFile(file, maxRows);
+
+        for (String[] row : rows) {
+            String texte1 = row[0];
+            String texte2 = row[1];
+
+            coupleTexte couple = new coupleTexte();
+            couple.setTexte1(texte1);
+            couple.setTexte2(texte2);
+            couple.setDataSet(dataset);
+            coupleTextes.add(couple);
+        }
+
+        System.out.println("Importé " + rows.size() + " couples de textes.");
     }
 
     private String getCellValueAsString(Cell cell) {

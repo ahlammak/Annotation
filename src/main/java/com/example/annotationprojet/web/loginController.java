@@ -12,12 +12,12 @@ public class loginController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "auth/login";
     }
 
     @GetMapping("/")
     public String home() {
-        return "login";
+        return "auth/login";
     }
 
     @GetMapping("/access-denied")
