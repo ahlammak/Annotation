@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin-layout-simple}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Dataset</title>
+    <th:block layout:fragment="css">
+    <style>
+        /* Styles pour la page d'ajout de dataset */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title i {
+            margin-right: 0.5rem;
+            color: #0099ff;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            color: #4361ee;
+        }
+        
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Form styles */
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+        
+        /* File upload */
+        .file-upload {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-upload:hover {
+            border-color: #4361ee;
+            background-color: #f8f9fa;
+        }
+        
+        .file-upload-icon {
+            font-size: 2.5rem;
+            color: #4361ee;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload-text {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-upload-subtext {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+        
+        /* Classes section */
+        .classes-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .classes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .classes-title {
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .add-class-btn {
+            display: inline-flex;
+            align-items: center;
+            background-color: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .add-class-btn:hover {
+            background-color: #3a56d4;
+        }
+        
+        .add-class-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .class-item {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .class-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+        }
+        
+        .class-name {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .class-delete {
+            color: #e63946;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .class-delete:hover {
+            background-color: #ffebee;
+        }
+        
+        /* Form buttons */
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <a href="/admin/Dataset" class="back-link">
+        <i class="bi bi-arrow-left"></i> Retour
+    </a>
+    
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-plus-circle"></i> Ajouter un Dataset
+        </h1>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form th:action="@{/admin/importDataset}" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="nom" class="form-label">Nom du Dataset</label>
+                    <input type="text" class="form-control" id="nom" name="nom" placeholder="Entrez le nom du dataset" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Décrivez le contenu et l'objectif de ce dataset"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Fichier</label>
+                    <div class="file-upload" id="file-upload-area">
+                        <i class="bi bi-cloud-upload file-upload-icon"></i>
+                        <div class="file-upload-text">Glissez-déposez votre fichier ici</div>
+                        <div class="file-upload-subtext">ou cliquez pour sélectionner un fichier (CSV, Excel)</div>
+                    </div>
+                    <input type="file" class="file-input" id="file" name="file" accept=".csv,.xlsx,.xls" required>
+                </div>
+                
+                <div class="classes-section">
+                    <div class="classes-header">
+                        <h3 class="classes-title">Classes d'annotation</h3>
+                        <button type="button" class="add-class-btn" data-bs-toggle="modal" data-bs-target="#addClassModal">
+                            <i class="bi bi-plus-lg"></i> Ajouter une classe
+                        </button>
+                    </div>
+                    <div id="classes-container">
+                        <!-- Les classes seront ajoutées ici dynamiquement -->
+                    </div>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='/admin/Dataset'">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal pour ajouter une classe -->
+    <div class="modal fade" id="addClassModal" tabindex="-1" aria-labelledby="addClassModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addClassModalLabel">Ajouter une classe</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="className" class="form-label">Nom de la classe</label>
+                        <input type="text" class="form-control" id="className" placeholder="Entrez le nom de la classe">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Couleur</label>
+                        <div class="d-flex flex-wrap gap-2 mt-2" id="colorPicker">
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #EF4444; cursor: pointer;" data-color="#EF4444"></div>
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #F59E0B; cursor: pointer;" data-color="#F59E0B"></div>
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #10B981; cursor: pointer;" data-color="#10B981"></div>
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #0EA5E9; cursor: pointer;" data-color="#0EA5E9"></div>
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #4F46E5; cursor: pointer;" data-color="#4F46E5"></div>
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #8B5CF6; cursor: pointer;" data-color="#8B5CF6"></div>
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #EC4899; cursor: pointer;" data-color="#EC4899"></div>
+                            <div class="color-option" style="width: 30px; height: 30px; border-radius: 50%; background-color: #6B7280; cursor: pointer;" data-color="#6B7280"></div>
+                        </div>
+                        <input type="hidden" id="selectedColor" value="#4F46E5">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="addClassBtn">Ajouter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de l'upload de fichier
+            const fileInput = document.getElementById('file');
+            const fileUploadArea = document.getElementById('file-upload-area');
+            const fileUploadText = document.querySelector('.file-upload-text');
+            const fileUploadSubtext = document.querySelector('.file-upload-subtext');
+            
+            fileUploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+                    fileUploadText.textContent = fileName;
+                    fileUploadSubtext.textContent = 'Fichier sélectionné';
+                    fileUploadArea.style.borderColor = '#10B981';
+                    fileUploadArea.style.backgroundColor = '#f0fdf4';
+                } else {
+                    fileUploadText.textContent = 'Glissez-déposez votre fichier ici';
+                    fileUploadSubtext.textContent = 'ou cliquez pour sélectionner un fichier (CSV, Excel)';
+                    fileUploadArea.style.borderColor = '#dee2e6';
+                    fileUploadArea.style.backgroundColor = '';
+                }
+            });
+            
+            // Gestion du drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                fileUploadArea.style.borderColor = '#4361ee';
+                fileUploadArea.style.backgroundColor = '#f0f4ff';
+            }
+            
+            function unhighlight() {
+                fileUploadArea.style.borderColor = '#dee2e6';
+                fileUploadArea.style.backgroundColor = '';
+            }
+            
+            fileUploadArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                
+                if (files.length > 0) {
+                    const fileName = files[0].name;
+                    fileUploadText.textContent = fileName;
+                    fileUploadSubtext.textContent = 'Fichier sélectionné';
+                    fileUploadArea.style.borderColor = '#10B981';
+                    fileUploadArea.style.backgroundColor = '#f0fdf4';
+                }
+            }
+            
+            // Gestion des classes
+            const classesContainer = document.getElementById('classes-container');
+            const addClassBtn = document.getElementById('addClassBtn');
+            const classNameInput = document.getElementById('className');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const selectedColorInput = document.getElementById('selectedColor');
+            let classCounter = 0;
+            
+            // Sélection de couleur
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    colorOptions.forEach(opt => opt.style.border = 'none');
+                    this.style.border = '2px solid white';
+                    this.style.boxShadow = '0 0 0 2px #4361ee';
+                    selectedColorInput.value = this.dataset.color;
+                });
+            });
+            
+            // Sélectionner la première couleur par défaut
+            colorOptions[0].style.border = '2px solid white';
+            colorOptions[0].style.boxShadow = '0 0 0 2px #4361ee';
+            
+            // Ajouter une classe
+            addClassBtn.addEventListener('click', function() {
+                const className = classNameInput.value.trim();
+                const color = selectedColorInput.value;
+                
+                if (className) {
+                    addClassItem(className, color);
+                    
+                    // Réinitialiser le formulaire
+                    classNameInput.value = '';
+                    colorOptions.forEach(opt => opt.style.border = 'none');
+                    colorOptions.forEach(opt => opt.style.boxShadow = 'none');
+                    colorOptions[0].style.border = '2px solid white';
+                    colorOptions[0].style.boxShadow = '0 0 0 2px #4361ee';
+                    selectedColorInput.value = colorOptions[0].dataset.color;
+                    
+                    // Fermer le modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addClassModal'));
+                    modal.hide();
+                }
+            });
+            
+            function addClassItem(name, color) {
+                const classId = 'class_' + classCounter++;
+                
+                const classItem = document.createElement('div');
+                classItem.className = 'class-item';
+                classItem.innerHTML = `
+                    <div class="class-color" style="background-color: ${color}"></div>
+                    <div class="class-name">${name}</div>
+                    <button type="button" class="class-delete" onclick="removeClassItem('${classId}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <input type="hidden" name="classes[${classCounter-1}].nom" value="${name}">
+                    <input type="hidden" name="classes[${classCounter-1}].couleur" value="${color}">
+                `;
+                classItem.id = classId;
+                
+                classesContainer.appendChild(classItem);
+            }
+            
+            // Fonction globale pour supprimer une classe
+            window.removeClassItem = function(id) {
+                const classItem = document.getElementById(id);
+                if (classItem) {
+                    classItem.remove();
+                }
+            };
+        });
+    </script>
+</th:block>
+</body>
+</html>

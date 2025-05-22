@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Dataset</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <style>
+        /* Styles de base */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.25rem;
+        }
+
+        .nav-link {
+            color: #555;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-link.active {
+            background-color: #f0f0f0;
+            color: #4361ee;
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding: 1rem 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        /* Styles pour la page d'ajout de dataset */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 0.5rem;
+            color: #0099ff;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #4361ee;
+        }
+
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+
+        /* Form styles */
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* File upload */
+        .file-upload {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .file-upload:hover {
+            border-color: #4361ee;
+            background-color: #f8f9fa;
+        }
+
+        .file-upload-icon {
+            font-size: 2.5rem;
+            color: #4361ee;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-text {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-subtext {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        /* Classes section */
+        .classes-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .classes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .classes-title {
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .add-class-btn {
+            display: inline-flex;
+            align-items: center;
+            background-color: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .add-class-btn:hover {
+            background-color: #3a56d4;
+        }
+
+        .add-class-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .class-item {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .class-item:hover {
+            background-color: #f1f5f9;
+            transform: translateX(5px);
+        }
+
+        .class-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+        }
+
+        .class-name {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .class-delete {
+            color: #e63946;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .class-delete:hover {
+            background-color: #ffebee;
+        }
+
+        /* Form buttons */
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Card */
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            background-color: white;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/admin">
+                <i class="bi bi-clipboard-check me-2"></i>Administration
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/admin">
+                            <i class="bi bi-house-door"></i>Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/Dataset">
+                            <i class="bi bi-database"></i>Datasets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/listeAnnotateur">
+                            <i class="bi bi-people"></i>Annotateurs
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="/logout" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-box-arrow-right me-1"></i>Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <a href="/admin/Dataset" class="back-link">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="bi bi-plus-circle"></i> Ajouter un Dataset
+                </h1>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="@{/admin/importDataset}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="nom" class="form-label">Nom du Dataset</label>
+                            <input type="text" class="form-control" id="nom" name="nom" placeholder="Entrez le nom du dataset" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Décrivez le contenu et l'objectif de ce dataset"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fichier</label>
+                            <div class="file-upload" id="file-upload-area">
+                                <i class="bi bi-cloud-upload file-upload-icon"></i>
+                                <div class="file-upload-text">Glissez-déposez votre fichier ici</div>
+                                <div class="file-upload-subtext">ou cliquez pour sélectionner un fichier (CSV, Excel)</div>
+                            </div>
+                            <input type="file" class="file-input" id="file" name="file" accept=".csv,.xlsx,.xls" required>
+                        </div>
+
+                        <div class="classes-section">
+                            <div class="mb-3">
+                                <label for="classes" class="form-label">Classes d'annotation</label>
+                                <input type="text" class="form-control" id="classes" name="classes" placeholder="Entrez les classes séparées par des virgules (ex: Positif, Négatif, Neutre)">
+                                <div class="form-text">Séparez les différentes classes par des virgules</div>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='/admin/Dataset'">Annuler</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i> Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <span>© 2025 Annotation App. Tous droits réservés.</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de l'upload de fichier
+            const fileInput = document.getElementById('file');
+            const fileUploadArea = document.getElementById('file-upload-area');
+            const fileUploadText = document.querySelector('.file-upload-text');
+            const fileUploadSubtext = document.querySelector('.file-upload-subtext');
+
+            fileUploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+                    fileUploadText.textContent = fileName;
+                    fileUploadSubtext.textContent = 'Fichier sélectionné';
+                    fileUploadArea.style.borderColor = '#10B981';
+                    fileUploadArea.style.backgroundColor = '#f0fdf4';
+                } else {
+                    fileUploadText.textContent = 'Glissez-déposez votre fichier ici';
+                    fileUploadSubtext.textContent = 'ou cliquez pour sélectionner un fichier (CSV, Excel)';
+                    fileUploadArea.style.borderColor = '#dee2e6';
+                    fileUploadArea.style.backgroundColor = '';
+                }
+            });
+
+            // Gestion du drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                fileUploadArea.style.borderColor = '#4361ee';
+                fileUploadArea.style.backgroundColor = '#f0f4ff';
+            }
+
+            function unhighlight() {
+                fileUploadArea.style.borderColor = '#dee2e6';
+                fileUploadArea.style.backgroundColor = '';
+            }
+
+            fileUploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+
+                if (files.length > 0) {
+                    const fileName = files[0].name;
+                    fileUploadText.textContent = fileName;
+                    fileUploadSubtext.textContent = 'Fichier sélectionné';
+                    fileUploadArea.style.borderColor = '#10B981';
+                    fileUploadArea.style.backgroundColor = '#f0fdf4';
+                }
+            }
+
+            // Aucun code JavaScript nécessaire pour le champ de classes simple
+        });
+    </script>
+</body>
+</html>

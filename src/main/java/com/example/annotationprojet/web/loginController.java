@@ -27,7 +27,7 @@ public class loginController {
 
     @GetMapping("/admin/admin")
     public String showAdminHome(Model model) {
-        return "admin/admin";
+        return "admin/admin-standalone";
     }
     @GetMapping("/user/user")
     public String showUserHome(Model model) {

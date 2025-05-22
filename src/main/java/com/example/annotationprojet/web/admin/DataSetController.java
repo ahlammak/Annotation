@@ -53,7 +53,7 @@ public class DataSetController {
 
     @GetMapping("/admin/Dataset")
     public String datasetChoice() {
-        return "admin/Dataset/DatasetChoice";
+        return "admin/Dataset/DatasetChoice-standalone";
     }
 
     @GetMapping("/admin/addDataset")
@@ -61,7 +61,7 @@ public class DataSetController {
         // Récupérer tous les datasets pour le formulaire d'ajout
         List<DataSet> datasets = dataSetService.getAllDataSets();
         model.addAttribute("datasets", datasets);
-        return "admin/Dataset/Dataset";
+        return "admin/Dataset/Dataset-standalone";
     }
 
     @GetMapping("/admin/listDatasets")
@@ -69,7 +69,7 @@ public class DataSetController {
         // Récupérer tous les datasets pour l'affichage
         List<DataSet> datasets = dataSetService.getAllDataSets();
         model.addAttribute("datasets", datasets);
-        return "admin/Dataset/listDatasets";
+        return "admin/Dataset/listDatasets-simple-fixed";
     }
 
     @GetMapping("/admin/viewDataset")
@@ -147,7 +147,7 @@ public class DataSetController {
 
             System.out.println("Fin de la méthode viewDataset, retour de la vue");
 
-            return "admin/Dataset/viewDataset";
+            return "admin/Dataset/viewDataset-simple";
         } catch (Exception e) {
             System.err.println("Erreur générale dans viewDataset : " + e.getMessage());
             e.printStackTrace();
