@@ -158,159 +158,198 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <div class="app-sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <i class="material-icons">dashboard</i>
-                    <span>Annotation App</span>
-                </div>
-                <button id="sidebar-toggle" class="sidebar-toggle">
-                    <i class="material-icons">chevron_left</i>
-                </button>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="app-sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="material-icons">dashboard</i>
+                <span>Annotation App</span>
             </div>
-            <div class="sidebar-menu">
-                <ul>
-                    <li class="active">
-                        <a href="/admin/admin">
-                            <i class="material-icons">dashboard</i>
-                            <span>Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/admin/Dataset">
-                            <i class="material-icons">storage</i>
-                            <span>Datasets</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/admin/listeAnnotateur">
-                            <i class="material-icons">people</i>
-                            <span>Annotateurs</span>
-                        </a>
-                    </li>
+            <button id="sidebar-toggle" class="sidebar-toggle">
+                <i class="material-icons">chevron_left</i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li class="active">
+                    <a href="/admin/admin">
+                        <i class="material-icons">dashboard</i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/Dataset">
+                        <i class="material-icons">storage</i>
+                        <span>Datasets</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/listeAnnotateur">
+                        <i class="material-icons">people</i>
+                        <span>Annotateurs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/statistics">
+                        <i class="material-icons">analytics</i>
+                        <span>Statistiques</span>
+                    </a>
+                </li>
 
-                </ul>
-            </div>
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="avatar">A</div>
-                    <div class="user-details">
-                        <div class="user-name">Admin</div>
-                        <div class="user-email">admin@example.com</div>
-                    </div>
-                </div>
-            </div>
+            </ul>
         </div>
 
-        <!-- Content Wrapper -->
-        <div class="content-wrapper">
-            <!-- Navbar -->
-            <div class="app-navbar">
-                <div class="navbar-left">
-                    <button id="menu-toggle" class="menu-toggle">
-                        <i class="material-icons">menu</i>
-                    </button>
-                    <h2 class="page-title">Tableau de bord</h2>
-                </div>
-                <div class="navbar-right">
-                    <div class="navbar-item user-dropdown">
-                        <div class="avatar">A</div>
-                        <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item">
-                                <i class="material-icons">person</i>
-                                <span>Profil</span>
-                            </a>
-                            <a href="/logout" class="dropdown-item">
-                                <i class="material-icons">exit_to_app</i>
-                                <span>Déconnexion</span>
-                            </a>
-                        </div>
-                    </div>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">Admin</div>
+                    <div class="user-email">admin@example.com</div>
                 </div>
             </div>
-
-            <!-- Main Content -->
-            <div class="main-content">
-                <div class="welcome-section fadeIn">
-                    <h1 class="welcome-title">Bienvenue dans l'interface d'administration</h1>
-                    <p class="welcome-subtitle">Gérez vos datasets et annotateurs facilement depuis ce tableau de bord central.</p>
-                </div>
-
-                <div class="admin-cards">
-                    <div class="admin-card fadeIn">
-                        <div class="admin-card-icon">
-                            <i class="bi bi-database"></i>
-                        </div>
-                        <h2 class="admin-card-title">Gérer les Datasets</h2>
-                        <p class="admin-card-text">Ajoutez, modifiez ou supprimez des datasets. Importez des fichiers CSV ou Excel contenant des paires de textes à annoter.</p>
-                        <a href="/admin/Dataset" class="admin-card-link">
-                            Accéder
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-
-                    <div class="admin-card annotateurs fadeIn">
-                        <div class="admin-card-icon annotateurs">
-                            <i class="bi bi-people"></i>
-                        </div>
-                        <h2 class="admin-card-title">Gérer les Annotateurs</h2>
-                        <p class="admin-card-text">Ajoutez, modifiez ou supprimez des annotateurs. Gérez les comptes utilisateurs qui effectueront les annotations.</p>
-                        <a href="/admin/listeAnnotateur" class="admin-card-link annotateurs">
-                            Accéder
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-
-
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <footer class="footer text-center">
-                <span>© 2025 Annotation App. Tous droits réservés.</span>
-            </footer>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar toggle
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const appContainer = document.querySelector('.app-container');
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Navbar -->
+        <div class="app-navbar">
+            <div class="navbar-left">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="material-icons">menu</i>
+                </button>
+                <h2 class="page-title">Tableau de bord</h2>
+            </div>
+            <div class="navbar-right">
+                <div class="navbar-item user-dropdown">
+                    <div class="avatar">A</div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="material-icons">person</i>
+                            <span>Profil</span>
+                        </a>
+                        <a href="/logout" class="dropdown-item">
+                            <i class="material-icons">exit_to_app</i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
-                    appContainer.classList.toggle('sidebar-collapsed');
-                });
-            }
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="welcome-section fadeIn">
+                <h1 class="welcome-title">Bienvenue dans l'interface d'administration</h1>
+                <p class="welcome-subtitle">Gérez vos datasets et annotateurs facilement depuis ce tableau de bord central.</p>
+            </div>
 
-            // Menu toggle (mobile)
-            const menuToggle = document.getElementById('menu-toggle');
-            if (menuToggle) {
-                menuToggle.addEventListener('click', function() {
-                    appContainer.classList.toggle('sidebar-mobile-open');
-                });
-            }
+            <div class="admin-cards">
+                <div class="admin-card fadeIn">
+                    <div class="admin-card-icon">
+                        <i class="bi bi-database"></i>
+                    </div>
+                    <h2 class="admin-card-title">Gérer les Datasets</h2>
+                    <p class="admin-card-text">Ajoutez, modifiez ou supprimez des datasets. Importez des fichiers CSV ou Excel contenant des paires de textes à annoter.</p>
+                    <a href="/admin/Dataset" class="admin-card-link">
+                        Accéder
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
 
-            // User dropdown
-            const userDropdown = document.querySelector('.user-dropdown');
-            if (userDropdown) {
-                userDropdown.addEventListener('click', function() {
-                    this.classList.toggle('open');
-                });
-            }
+                <div class="admin-card annotateurs fadeIn">
+                    <div class="admin-card-icon annotateurs">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h2 class="admin-card-title">Gérer les Annotateurs</h2>
+                    <p class="admin-card-text">Ajoutez, modifiez ou supprimez des annotateurs. Gérez les comptes utilisateurs qui effectueront les annotations.</p>
+                    <a href="/admin/listeAnnotateur" class="admin-card-link annotateurs">
+                        Accéder
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.user-dropdown') && document.querySelector('.user-dropdown.open')) {
-                    document.querySelector('.user-dropdown.open').classList.remove('open');
-                }
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer text-center">
+            <span>© 2025 Annotation App. Tous droits réservés.</span>
+        </footer>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const appContainer = document.querySelector('.app-container');
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-collapsed');
             });
+        }
+
+        // Menu toggle (mobile)
+        const menuToggle = document.getElementById('menu-toggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-mobile-open');
+            });
+        }
+
+        // User dropdown
+        const userDropdown = document.querySelector('.user-dropdown');
+        if (userDropdown) {
+            userDropdown.addEventListener('click', function() {
+                this.classList.toggle('open');
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.user-dropdown') && document.querySelector('.user-dropdown.open')) {
+                document.querySelector('.user-dropdown.open').classList.remove('open');
+            }
         });
-    </script>
+
+        // Charger les statistiques
+        loadStatistics();
+    });
+
+    /**
+     * Fonction pour charger les statistiques depuis l'API
+     */
+    function loadStatistics() {
+        fetch('/admin/api/statistics')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Mettre à jour les valeurs dans la sidebar
+                document.getElementById('stat-annotateurs').textContent = data.totalAnnotateurs || '0';
+                document.getElementById('stat-datasets').textContent = data.totalDatasets || '0';
+                document.getElementById('stat-taches').textContent = data.totalTaches || '0';
+                document.getElementById('stat-annotations').textContent = data.totalAnnotations || '0';
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des statistiques:', error);
+                // Afficher des valeurs par défaut en cas d'erreur
+                document.getElementById('stat-annotateurs').textContent = 'N/A';
+                document.getElementById('stat-datasets').textContent = 'N/A';
+                document.getElementById('stat-taches').textContent = 'N/A';
+                document.getElementById('stat-annotations').textContent = 'N/A';
+            });
+    }
+</script>
 </body>
 </html>

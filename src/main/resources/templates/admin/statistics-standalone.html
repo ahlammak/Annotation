@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques - Administration</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="/css/sidebar-navbar.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Styles spécifiques aux statistiques */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-left: 4px solid #4361ee;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card.datasets {
+            border-left-color: #4361ee;
+        }
+
+        .stat-card.annotateurs {
+            border-left-color: #e63946;
+        }
+
+        .stat-card.classes {
+            border-left-color: #f77f00;
+        }
+
+        .stat-card.taches {
+            border-left-color: #277da1;
+        }
+
+        .stat-card.annotations {
+            border-left-color: #43aa8b;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.datasets {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: #4361ee;
+        }
+
+        .stat-icon.annotateurs {
+            background-color: rgba(230, 57, 70, 0.1);
+            color: #e63946;
+        }
+
+        .stat-icon.classes {
+            background-color: rgba(247, 127, 0, 0.1);
+            color: #f77f00;
+        }
+
+        .stat-icon.taches {
+            background-color: rgba(39, 125, 161, 0.1);
+            color: #277da1;
+        }
+
+        .stat-icon.annotations {
+            background-color: rgba(67, 170, 139, 0.1);
+            color: #43aa8b;
+        }
+
+        .stat-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .stat-detail {
+            background-color: #f8f9fa;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .stat-detail-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .stat-detail-value {
+            color: #333;
+            font-weight: 600;
+            margin-left: 0.25rem;
+        }
+
+        /* Section des datasets détaillés */
+        .detailed-section {
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 0.5rem;
+            color: #4361ee;
+        }
+
+        .dataset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dataset-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .dataset-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .dataset-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .dataset-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .dataset-status.processing {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .dataset-status.completed {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .dataset-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .dataset-metric {
+            text-align: center;
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .dataset-metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dataset-metric-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+        .progress-section {
+            margin-top: 1rem;
+        }
+
+        .progress-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            border-radius: 4px;
+        }
+
+        /* Animations */
+        .fadeIn {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        /* Styles pour les graphiques */
+        .charts-section {
+            margin-top: 3rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .chart-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .chart-icon.progress {
+            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+        }
+
+        .chart-icon.annotations {
+            background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
+        }
+
+        .chart-icon.activity {
+            background: linear-gradient(135deg, #f77f00 0%, #f9844a 100%);
+        }
+
+        .chart-icon.distribution {
+            background: linear-gradient(135deg, #277da1 0%, #4d908e 100%);
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .chart-full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-full-width .chart-container {
+            height: 400px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive pour les graphiques */
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .dataset-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="app-sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="material-icons">dashboard</i>
+                <span>Annotation App</span>
+            </div>
+            <button id="sidebar-toggle" class="sidebar-toggle">
+                <i class="material-icons">chevron_left</i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="/admin/admin">
+                        <i class="material-icons">dashboard</i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/Dataset">
+                        <i class="material-icons">storage</i>
+                        <span>Datasets</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/listeAnnotateur">
+                        <i class="material-icons">people</i>
+                        <span>Annotateurs</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/admin/statistics">
+                        <i class="material-icons">analytics</i>
+                        <span>Statistiques</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">Admin</div>
+                    <div class="user-email">admin@example.com</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Navbar -->
+        <div class="app-navbar">
+            <div class="navbar-left">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="material-icons">menu</i>
+                </button>
+                <h2 class="page-title">Statistiques</h2>
+            </div>
+            <div class="navbar-right">
+                <div class="navbar-item user-dropdown">
+                    <div class="avatar">A</div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="material-icons">person</i>
+                            <span>Profil</span>
+                        </a>
+                        <a href="/logout" class="dropdown-item">
+                            <i class="material-icons">exit_to_app</i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Vue d'ensemble des statistiques -->
+            <div class="stats-overview fadeIn" th:if="${statistics}">
+                <!-- Statistiques des Datasets -->
+                <div class="stat-card datasets">
+                    <div class="stat-header">
+                        <div class="stat-icon datasets">
+                            <i class="bi bi-database"></i>
+                        </div>
+                        <h3 class="stat-title">Datasets</h3>
+                    </div>
+                    <div class="stat-value" th:text="${statistics.datasets.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">En traitement:</span>
+                            <span class="stat-detail-value" th:text="${statistics.datasets.enTraitement ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Couples texte:</span>
+                            <span class="stat-detail-value" th:text="${statistics.datasets.totalCouplesTexte ?: '0'}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques des Annotateurs -->
+                <div class="stat-card annotateurs">
+                    <div class="stat-header">
+                        <div class="stat-icon annotateurs">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3 class="stat-title">Annotateurs</h3>
+                    </div>
+                    <div class="stat-value" th:text="${statistics.annotateurs.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Avec tâches:</span>
+                            <span class="stat-detail-value" th:text="${statistics.annotateurs.avecTaches ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Annotations:</span>
+                            <span class="stat-detail-value" th:text="${statistics.annotateurs.totalAnnotations ?: '0'}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques des Classes -->
+                <div class="stat-card classes">
+                    <div class="stat-header">
+                        <div class="stat-icon classes">
+                            <i class="bi bi-tags"></i>
+                        </div>
+                        <h3 class="stat-title">Classes</h3>
+                    </div>
+                    <div class="stat-value" th:text="${statistics.classes.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Moyenne par dataset:</span>
+                            <span class="stat-detail-value" th:text="${statistics.classes.moyenneParDataset ?: '0'}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques des Tâches -->
+                <div class="stat-card taches">
+                    <div class="stat-header">
+                        <div class="stat-icon taches">
+                            <i class="bi bi-list-task"></i>
+                        </div>
+                        <h3 class="stat-title">Tâches</h3>
+                    </div>
+                    <div class="stat-value" th:text="${statistics.taches.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Terminées:</span>
+                            <span class="stat-detail-value" th:text="${statistics.taches.terminees ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">En cours:</span>
+                            <span class="stat-detail-value" th:text="${statistics.taches.enCours ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Non commencées:</span>
+                            <span class="stat-detail-value" th:text="${statistics.taches.nonCommencees ?: '0'}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques des Annotations -->
+                <div class="stat-card annotations">
+                    <div class="stat-header">
+                        <div class="stat-icon annotations">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <h3 class="stat-title">Annotations</h3>
+                    </div>
+                    <div class="stat-value" th:text="${statistics.annotations.totalAnnotations ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Progression:</span>
+                            <span class="stat-detail-value" th:text="${statistics.annotations.pourcentageGlobal ?: '0'} + '%'">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section des datasets détaillés -->
+            <div class="detailed-section fadeIn" th:if="${detailedStats}">
+                <h2 class="section-title">
+                    <i class="bi bi-bar-chart"></i>
+                    Statistiques détaillées par dataset
+                </h2>
+
+                <div class="dataset-grid">
+                    <div class="dataset-card" th:each="entry : ${detailedStats}" th:with="dataset=${entry.value}">
+                        <div class="dataset-header">
+                            <div>
+                                <div class="dataset-name" th:text="${dataset.nom}">Nom du dataset</div>
+                            </div>
+                            <div class="dataset-status"
+                                 th:class="${dataset.enTraitement ? 'dataset-status processing' : 'dataset-status completed'}"
+                                 th:text="${dataset.enTraitement ? 'En traitement' : 'Terminé'}">
+                                Statut
+                            </div>
+                        </div>
+
+                        <div class="dataset-metrics">
+                            <div class="dataset-metric">
+                                <div class="dataset-metric-value" th:text="${dataset.couplesTexte ?: '0'}">0</div>
+                                <div class="dataset-metric-label">Couples texte</div>
+                            </div>
+                            <div class="dataset-metric">
+                                <div class="dataset-metric-value" th:text="${dataset.taches ?: '0'}">0</div>
+                                <div class="dataset-metric-label">Tâches</div>
+                            </div>
+                            <div class="dataset-metric">
+                                <div class="dataset-metric-value" th:text="${dataset.classes ?: '0'}">0</div>
+                                <div class="dataset-metric-label">Classes</div>
+                            </div>
+                            <div class="dataset-metric">
+                                <div class="dataset-metric-value" th:text="${dataset.annotations ?: '0'}">0</div>
+                                <div class="dataset-metric-label">Annotations</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                Progression: <span th:text="${dataset.pourcentage ?: '0'} + '%'">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success"
+                                     role="progressbar"
+                                     th:style="'width: ' + ${dataset.pourcentage ?: '0'} + '%'"
+                                     th:attr="aria-valuenow=${dataset.pourcentage ?: '0'}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message d'erreur -->
+            <div class="alert alert-danger fadeIn" th:if="${errorMessage}">
+                <i class="bi bi-exclamation-triangle"></i>
+                <span th:text="${errorMessage}">Erreur lors du chargement des statistiques</span>
+            </div>
+
+            <!-- Message si aucune donnée -->
+            <div class="alert alert-info fadeIn" th:if="${!statistics and !errorMessage}">
+                <i class="bi bi-info-circle"></i>
+                Aucune donnée statistique disponible pour le moment.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer text-center">
+            <span>© 2025 Annotation App. Tous droits réservés.</span>
+        </footer>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const appContainer = document.querySelector('.app-container');
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-collapsed');
+            });
+        }
+
+        // Menu toggle (mobile)
+        const menuToggle = document.getElementById('menu-toggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-mobile-open');
+            });
+        }
+
+        // User dropdown
+        const userDropdown = document.querySelector('.user-dropdown');
+        if (userDropdown) {
+            userDropdown.addEventListener('click', function() {
+                this.classList.toggle('open');
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.user-dropdown') && document.querySelector('.user-dropdown.open')) {
+                document.querySelector('.user-dropdown.open').classList.remove('open');
+            }
+        });
+
+
+    });
+
+
+</script>
+</body>
+</html>

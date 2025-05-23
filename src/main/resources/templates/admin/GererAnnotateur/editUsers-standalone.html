@@ -10,184 +10,148 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="/css/sidebar-navbar.css">
     <style>
-        /* Styles de base */
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #f8f9fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-
-        /* Navbar */
-        .navbar {
-            background-color: white !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 0.75rem 0;
-        }
-
-        .navbar-brand {
-            font-weight: 600;
-            color: #333;
-            font-size: 1.25rem;
-        }
-
-        .nav-link {
-            color: #555;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-link:hover {
-            background-color: #f0f0f0;
-            color: #333;
-        }
-
-        .nav-link.active {
-            background-color: #f0f0f0;
-            color: #4361ee;
-        }
-
-        .nav-link i {
-            margin-right: 0.5rem;
-        }
-
-        /* Contenu principal */
-        .main-content {
-            flex: 1;
-            padding: 2rem 0;
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: auto;
-            padding: 1rem 0;
-            background-color: white;
-            border-top: 1px solid #eee;
-            color: #6c757d;
-            font-size: 0.875rem;
-        }
-
-        /* Styles pour la page d'édition d'un annotateur */
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-            display: flex;
-            align-items: center;
-        }
-
-        .page-title i {
-            margin-right: 0.5rem;
-            color: #e63946;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: #6c757d;
-            text-decoration: none;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
-
-        .back-link:hover {
-            color: #4361ee;
-        }
-
-        .back-link i {
-            margin-right: 0.5rem;
-        }
-
-        /* Card */
-        .card {
+        /* Styles spécifiques pour modifier un annotateur */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1.5rem;
-            background-color: white;
         }
 
-        .card-header {
-            background-color: white;
-            border-bottom: 1px solid #eee;
-            padding: 1rem 1.25rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .card-body {
-            padding: 1.25rem;
-        }
-
-        /* Form */
-        .form-label {
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 0.5rem;
+        .form-card .card-header {
+            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            border: none;
+            padding: 1.5rem;
         }
 
         .form-control {
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 0.5rem 0.75rem;
-            transition: border-color 0.2s ease;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
         }
 
         .form-control:focus {
             border-color: #4361ee;
-            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
 
-        /* Buttons */
         .btn-primary {
-            background-color: #4361ee;
-            border-color: #4361ee;
-        }
-
-        .btn-primary:hover {
-            background-color: #3a56d4;
-            border-color: #3a56d4;
+            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 500;
         }
 
         .btn-secondary {
-            color: #6c757d;
-            background-color: #f8f9fa;
-            border-color: #dee2e6;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 500;
         }
 
-        .btn-secondary:hover {
-            background-color: #e9ecef;
-            border-color: #dee2e6;
+        .alert-info {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <!-- Le contenu de la navbar sera injecté par admin-layout.js -->
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="app-sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="material-icons">dashboard</i>
+                <span>Annotation App</span>
+            </div>
+            <button id="sidebar-toggle" class="sidebar-toggle">
+                <i class="material-icons">chevron_left</i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="/admin/admin">
+                        <i class="material-icons">dashboard</i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/Dataset">
+                        <i class="material-icons">storage</i>
+                        <span>Datasets</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/admin/listeAnnotateur">
+                        <i class="material-icons">people</i>
+                        <span>Annotateurs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/statistics">
+                        <i class="material-icons">analytics</i>
+                        <span>Statistiques</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container">
-            <a th:href="@{/admin/listeAnnotateur(page=${page},keyword=${keyword},size=${size})}" class="back-link">
-                <i class="bi bi-arrow-left"></i> Retour à la liste des annotateurs
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">Admin</div>
+                    <div class="user-email">admin@example.com</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Navbar -->
+        <div class="app-navbar">
+            <div class="navbar-left">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="material-icons">menu</i>
+                </button>
+                <h2 class="page-title">Modifier un Annotateur</h2>
+            </div>
+            <div class="navbar-right">
+                <div class="navbar-item user-dropdown">
+                    <div class="avatar">A</div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="material-icons">person</i>
+                            <span>Profil</span>
+                        </a>
+                        <a href="/logout" class="dropdown-item">
+                            <i class="material-icons">exit_to_app</i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <a th:href="@{/admin/listeAnnotateur(page=${page},keyword=${keyword},size=${size})}" class="back-link" style="display: inline-flex; align-items: center; color: #6c757d; text-decoration: none; margin-bottom: 1.5rem; font-weight: 500;">
+                <i class="bi bi-arrow-left" style="margin-right: 0.5rem;"></i> Retour à la liste des annotateurs
             </a>
 
-            <div class="page-header d-flex justify-content-between align-items-center mb-4">
-                <h1 class="page-title mb-0">
-                    <i class="bi bi-person-gear me-2"></i> Modifier un Annotateur
-                </h1>
-            </div>
-
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="bi bi-pencil-square me-2 text-primary"></i> Informations de l'annotateur</h5>
+            <div class="card form-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i> Informations de l'annotateur</h5>
                 </div>
                 <div class="card-body p-4">
                     <form method="post" th:action="@{/save}" th:object="${user}">
@@ -200,11 +164,13 @@
                             <div class="col-md-6 mb-3">
                                 <label for="nom" class="form-label fw-medium">Nom</label>
                                 <input type="text" class="form-control form-control-lg" id="nom" name="nom" th:value="${user.nom}" required>
+                                <span class="text-danger" th:errors="${user.nom}"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label for="prenom" class="form-label fw-medium">Prénom</label>
                                 <input type="text" class="form-control form-control-lg" id="prenom" name="prenom" th:value="${user.prenom}" required>
+                                <span class="text-danger" th:errors="${user.prenom}"></span>
                             </div>
                         </div>
 
@@ -212,22 +178,25 @@
                             <label for="login" class="form-label fw-medium">Login</label>
                             <input type="text" class="form-control form-control-lg" id="login" name="login" th:value="${user.login}" required>
                             <div class="form-text">Ce login sera utilisé par l'annotateur pour se connecter à l'application.</div>
+                            <span class="text-danger" th:errors="${user.login}"></span>
                         </div>
 
                         <div class="alert alert-info d-flex align-items-center mb-4">
                             <i class="bi bi-info-circle-fill fs-4 me-3"></i>
                             <div>
                                 <strong>Information sur le mot de passe</strong>
-                                <p class="mb-0">Un mot de passe aléatoire sera généré automatiquement pour cet annotateur.</p>
+                                <p class="mb-0">Le mot de passe de cet annotateur reste inchangé. Il conserve le mot de passe qui lui a été attribué lors de sa création.</p>
                             </div>
                         </div>
 
+                        <input type="hidden" name="active" value="true">
+
                         <div class="d-flex justify-content-between mt-5">
-                            <a th:href="@{/admin/listeAnnotateur(page=${page},keyword=${keyword},size=${size})}" class="btn btn-outline-secondary btn-lg px-4">
-                                <i class="bi bi-arrow-left me-2"></i> Retour à la liste
+                            <a th:href="@{/admin/listeAnnotateur(page=${page},keyword=${keyword},size=${size})}" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left me-2"></i> Annuler
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="bi bi-check-lg me-2"></i> Enregistrer
+                                <i class="bi bi-check-lg me-2"></i> Enregistrer les modifications
                             </button>
                         </div>
                     </form>
@@ -235,16 +204,45 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Footer -->
-    <footer class="footer text-center">
-        <div class="container">
-            <span>© 2025 Annotation App. Tous droits réservés.</span>
-        </div>
-    </footer>
+<!-- Scripts -->
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const appContainer = document.querySelector('.app-container');
 
-    <!-- Scripts -->
-    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/admin-layout.js"></script>
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-collapsed');
+            });
+        }
+
+        // Menu toggle (mobile)
+        const menuToggle = document.getElementById('menu-toggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-mobile-open');
+            });
+        }
+
+        // User dropdown
+        const userDropdown = document.querySelector('.user-dropdown');
+        if (userDropdown) {
+            userDropdown.addEventListener('click', function() {
+                this.classList.toggle('open');
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.user-dropdown') && document.querySelector('.user-dropdown.open')) {
+                document.querySelector('.user-dropdown.open').classList.remove('open');
+            }
+        });
+    });
+</script>
 </body>
 </html>

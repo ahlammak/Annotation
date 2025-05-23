@@ -69,15 +69,16 @@ public class AdminController {
         String clearPassword = null;
 
         if (annotateur.getID() != null && annotateur.getID() > 0) {
-            clearPassword = generateRandomPassword();
+            // Modification d'un annotateur existant - PAS de génération de nouveau mot de passe
             Annotateur existing = annotateurRepository.findById(annotateur.getID())
                     .orElseThrow(() -> new RuntimeException("Annotateur non trouvé"));
 
+            // Mettre à jour seulement les informations de base
             existing.setNom(annotateur.getNom());
             existing.setPrenom(annotateur.getPrenom());
             existing.setLogin(annotateur.getLogin());
 
-
+            // Assurer que le rôle est défini
             if (existing.getRole() == null) {
                 Role roleUser = roleRepository.findByNomRole("USER");
                 if (roleUser == null) {
@@ -88,11 +89,12 @@ public class AdminController {
                 existing.setRole(roleUser);
             }
 
-            if (annotateur.getPassword() != null && !annotateur.getPassword().isEmpty()) {
-                existing.setPassword(passwordEncoder.encode(clearPassword));
-            }
+            // NE PAS modifier le mot de passe lors de la modification
+            // Le mot de passe reste celui qui a été généré lors de la création
 
             annotateurRepository.save(existing);
+
+            // clearPassword reste null pour les modifications
         } else {
 
             clearPassword = generateRandomPassword();

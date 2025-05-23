@@ -10,44 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="/css/sidebar-navbar.css">
     <style>
-        /* Styles de base */
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #f8f9fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-
-        /* Navbar */
-        .navbar {
-            background-color: white !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 0.75rem 0;
-        }
-
-        .navbar-brand {
-            font-weight: 600;
-            color: #333;
-            font-size: 1.25rem;
-        }
-
-        .nav-link {
-            color: #555;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-link:hover {
-            background-color: #f0f0f0;
-            color: #333;
-        }
-
-        .nav-link.active {
-            background-color: #f0f0f0;
-            color: #4361ee;
+        /* Styles spécifiques pour ajouter un annotateur */
         }
 
         .nav-link i {
@@ -170,20 +133,90 @@
     </style>
 </head>
 <body>
-    <!-- Le contenu de la navbar sera injecté par admin-layout.js -->
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container">
-            <a th:href="@{/admin/listeAnnotateur(keyword=${param.keyword},size=${param.size})}" class="back-link">
-                <i class="bi bi-arrow-left"></i> Retour à la liste des annotateurs
-            </a>
-
-            <div class="page-header d-flex justify-content-between align-items-center mb-4">
-                <h1 class="page-title mb-0">
-                    <i class="bi bi-person-plus me-2"></i> Ajouter un Annotateur
-                </h1>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="app-sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="material-icons">dashboard</i>
+                <span>Annotation App</span>
             </div>
+            <button id="sidebar-toggle" class="sidebar-toggle">
+                <i class="material-icons">chevron_left</i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="/admin/admin">
+                        <i class="material-icons">dashboard</i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/Dataset">
+                        <i class="material-icons">storage</i>
+                        <span>Datasets</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/admin/listeAnnotateur">
+                        <i class="material-icons">people</i>
+                        <span>Annotateurs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/statistics">
+                        <i class="material-icons">analytics</i>
+                        <span>Statistiques</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">Admin</div>
+                    <div class="user-email">admin@example.com</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Navbar -->
+        <div class="app-navbar">
+            <div class="navbar-left">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="material-icons">menu</i>
+                </button>
+                <h2 class="page-title">Ajouter un Annotateur</h2>
+            </div>
+            <div class="navbar-right">
+                <div class="navbar-item user-dropdown">
+                    <div class="avatar">A</div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="material-icons">person</i>
+                            <span>Profil</span>
+                        </a>
+                        <a href="/logout" class="dropdown-item">
+                            <i class="material-icons">exit_to_app</i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <a th:href="@{/admin/listeAnnotateur(keyword=${param.keyword},size=${param.size})}" class="back-link" style="display: inline-flex; align-items: center; color: #6c757d; text-decoration: none; margin-bottom: 1.5rem; font-weight: 500;">
+                <i class="bi bi-arrow-left" style="margin-right: 0.5rem;"></i> Retour à la liste des annotateurs
+            </a>
 
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
@@ -237,16 +270,46 @@
             </div>
         </div>
     </div>
+</div>
+</div>
 
-    <!-- Footer -->
-    <footer class="footer text-center">
-        <div class="container">
-            <span>© 2025 Annotation App. Tous droits réservés.</span>
-        </div>
-    </footer>
+<!-- Scripts -->
+<script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const appContainer = document.querySelector('.app-container');
 
-    <!-- Scripts -->
-    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/admin-layout.js"></script>
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-collapsed');
+            });
+        }
+
+        // Menu toggle (mobile)
+        const menuToggle = document.getElementById('menu-toggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                appContainer.classList.toggle('sidebar-mobile-open');
+            });
+        }
+
+        // User dropdown
+        const userDropdown = document.querySelector('.user-dropdown');
+        if (userDropdown) {
+            userDropdown.addEventListener('click', function() {
+                this.classList.toggle('open');
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.user-dropdown') && document.querySelector('.user-dropdown.open')) {
+                document.querySelector('.user-dropdown.open').classList.remove('open');
+            }
+        });
+    });
+</script>
 </body>
 </html>
