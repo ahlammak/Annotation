@@ -306,4 +306,42 @@ public class AffectationAnnotateurService {
             throw e;
         }
     }
+
+    /**
+     * Réaffecte les tâches d'un annotateur supprimé à tous les datasets auxquels il est affecté
+     * @param annotateurToRemove L'annotateur à supprimer
+     * @return Le nombre total de tâches réaffectées
+     */
+    @Transactional
+    public int reassignTasksForAllDatasets(Annotateur annotateurToRemove) {
+        try {
+            // Récupérer toutes les tâches de l'annotateur
+            List<Tache> allTaches = tacheRepository.findByAnnotateur(annotateurToRemove);
+
+            if (allTaches.isEmpty()) {
+                return 0; // Aucune tâche à réaffecter
+            }
+
+            // Regrouper les tâches par dataset
+            Map<Integer, DataSet> datasetsMap = new HashMap<>();
+            for (Tache tache : allTaches) {
+                if (tache.getData() != null) {
+                    datasetsMap.put(tache.getData().getID(), tache.getData());
+                }
+            }
+
+            // Réaffecter les tâches pour chaque dataset
+            int totalReassignedCount = 0;
+            for (DataSet dataset : datasetsMap.values()) {
+                int reassignedCount = reassignTasks(dataset, annotateurToRemove);
+                totalReassignedCount += reassignedCount;
+                System.out.println("Réaffecté " + reassignedCount + " tâches pour le dataset " + dataset.getNom());
+            }
+
+            return totalReassignedCount;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 }

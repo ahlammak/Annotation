@@ -61,7 +61,7 @@ public class UserTaskController {
                     model.addAttribute("taches", taches);
                     model.addAttribute("annotateur", annotateur);
 
-                    return "user/listTasks";
+                    return "user/listTasks-standalone";
                 } else {
                     System.err.println("Aucun annotateur trouvé avec le login: " + username);
                     return "redirect:/user/user?error=not_annotator";

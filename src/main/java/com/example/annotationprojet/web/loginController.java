@@ -31,6 +31,6 @@ public class loginController {
     }
     @GetMapping("/user/user")
     public String showUserHome(Model model) {
-        return "user/user";
+        return "user/user-standalone";
     }
 }

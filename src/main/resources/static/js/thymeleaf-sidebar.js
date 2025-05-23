@@ -32,8 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const isActive = {
     dashboard: window.location.pathname.includes('/admin/admin'),
     datasets: window.location.pathname.includes('/admin/Dataset'),
-    annotateurs: window.location.pathname.includes('/admin/listeAnnotateur') || window.location.pathname.includes('/admin/ListeAnnotateur'),
-    tasks: window.location.pathname.includes('/admin/tasks')
+    annotateurs: window.location.pathname.includes('/admin/listeAnnotateur') || window.location.pathname.includes('/admin/ListeAnnotateur')
   };
 
   // Créer la structure de l'app
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Récupérer le contenu original du body
   const originalContent = document.body.innerHTML;
-  
+
   // Créer la sidebar
   const sidebarHTML = `
     <!-- Sidebar -->
@@ -76,12 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
               <span>Annotateurs</span>
             </a>
           </li>
-          <li class="${isActive.tasks ? 'active' : ''}">
-            <a href="/admin/tasks">
-              <i class="material-icons">assignment</i>
-              <span>Tâches</span>
-            </a>
-          </li>
+
         </ul>
       </div>
       <div class="sidebar-footer">
@@ -134,11 +128,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Définir le HTML de l'appContainer
   appContainer.innerHTML = sidebarHTML;
-  
+
   // Remplacer le contenu du body
   document.body.innerHTML = '';
   document.body.appendChild(appContainer);
-  
+
   // Insérer le contenu original dans le conteneur approprié
   document.getElementById('thymeleaf-content').innerHTML = originalContent;
 

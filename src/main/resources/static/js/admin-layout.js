@@ -1,12 +1,8 @@
 /**
- * sidebar-navbar.js - Unified sidebar and navbar implementation
- * This consolidated file replaces multiple similar implementations:
- * - include-sidebar.js
- * - inject-sidebar.js
- * - sidebar-navbar.js (original)
+ * admin-layout.js - Script pour ajouter la navbar et la sidebar à toutes les interfaces d'administration
  */
 document.addEventListener('DOMContentLoaded', function() {
-  // Only apply to admin pages
+  // Seulement appliquer aux pages admin
   if (!window.location.pathname.includes('/admin/')) {
     return;
   }
@@ -16,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  // Add required CSS if not already present
+  // Ajouter les CSS requis s'ils ne sont pas déjà présents
   if (!document.querySelector('link[href="/css/sidebar-navbar.css"]')) {
     const styleLink = document.createElement('link');
     styleLink.rel = 'stylesheet';
@@ -31,19 +27,25 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(fontLink);
   }
 
-  // Sauvegarder le contenu original du body
-  const originalContent = document.body.innerHTML;
-
-  // Vider le body
-  document.body.innerHTML = '';
+  if (!document.querySelector('link[href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"]')) {
+    const fontInterLink = document.createElement('link');
+    fontInterLink.rel = 'stylesheet';
+    fontInterLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap';
+    document.head.appendChild(fontInterLink);
+  }
 
   // Déterminer quelle page est active
   const isActive = {
     dashboard: window.location.pathname.includes('/admin/admin'),
     datasets: window.location.pathname.includes('/admin/Dataset'),
-    annotateurs: window.location.pathname.includes('/admin/listeAnnotateur') || window.location.pathname.includes('/admin/ListeAnnotateur'),
-    tasks: window.location.pathname.includes('/admin/tasks')
+    annotateurs: window.location.pathname.includes('/admin/listeAnnotateur') || window.location.pathname.includes('/admin/ListeAnnotateur')
   };
+
+  // Sauvegarder le contenu original du body
+  const originalContent = document.body.innerHTML;
+
+  // Vider le body
+  document.body.innerHTML = '';
 
   // Créer la structure de l'app
   const appContainer = document.createElement('div');
@@ -55,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="app-sidebar">
       <div class="sidebar-header">
         <div class="logo">
-          <i class="material-icons">storage</i>
+          <i class="material-icons">dashboard</i>
           <span>Annotation App</span>
         </div>
         <button id="sidebar-toggle" class="sidebar-toggle">
@@ -104,12 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
           <button id="menu-toggle" class="menu-toggle">
             <i class="material-icons">menu</i>
           </button>
-          <div class="page-title">${document.title.split(' - ')[0] || 'Administration'}</div>
+          <h2 class="page-title">${document.title.split(' - ')[0] || 'Administration'}</h2>
         </div>
         <div class="navbar-right">
-          <div class="navbar-item">
-            <i class="material-icons">notifications</i>
-          </div>
           <div class="navbar-item user-dropdown">
             <div class="avatar">A</div>
             <div class="dropdown-menu">
@@ -149,40 +148,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // Forcer un recalcul pour s'assurer que la largeur du contenu est recalculée
     setTimeout(function() {
       window.dispatchEvent(new Event('resize'));
-      document.body.style.width = '100%';
-      contentWrapper.style.width = appContainer.classList.contains('sidebar-collapsed')
-        ? `calc(100% - ${getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width')})`
-        : `calc(100% - ${getComputedStyle(document.documentElement).getPropertyValue('--sidebar-collapsed-width')})`;
     }, 300);
   }
 
-  if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
-  if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+  // Ajouter les écouteurs d'événements
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', toggleSidebar);
+  }
 
-  // Fonctionnalité du menu déroulant utilisateur
-  if (userDropdown) {
-    userDropdown.addEventListener('click', function(event) {
-      event.stopPropagation();
-      this.classList.toggle('active');
+  if (menuToggle) {
+    menuToggle.addEventListener('click', function() {
+      appContainer.classList.toggle('sidebar-mobile-open');
     });
   }
 
-  // Fermer le menu déroulant en cliquant à l'extérieur
-  document.addEventListener('click', function(event) {
-    if (userDropdown && !userDropdown.contains(event.target)) {
-      userDropdown.classList.remove('active');
-    }
-  });
+  if (userDropdown) {
+    userDropdown.addEventListener('click', function(e) {
+      e.stopPropagation();
+      this.classList.toggle('open');
+    });
+
+    // Fermer le dropdown quand on clique ailleurs
+    document.addEventListener('click', function() {
+      if (userDropdown.classList.contains('open')) {
+        userDropdown.classList.remove('open');
+      }
+    });
+  }
 
   // Gérer le redimensionnement de la fenêtre
   window.addEventListener('resize', function() {
     document.body.style.width = '100%';
-    if (window.innerWidth > 768) {
-      contentWrapper.style.width = appContainer.classList.contains('sidebar-collapsed')
-        ? `calc(100% - ${getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width')})`
-        : `calc(100% - ${getComputedStyle(document.documentElement).getPropertyValue('--sidebar-collapsed-width')})`;
-    } else {
-      contentWrapper.style.width = '100%';
+    if (window.innerWidth <= 768) {
+      appContainer.classList.remove('sidebar-collapsed');
     }
   });
 

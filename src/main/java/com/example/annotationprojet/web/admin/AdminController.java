@@ -1,5 +1,6 @@
 package com.example.annotationprojet.web.admin;
 
+import com.example.annotationprojet.Service.AffectationAnnotateurService;
 import com.example.annotationprojet.entities.Annotateur;
 import com.example.annotationprojet.entities.Role;
 import com.example.annotationprojet.repositories.AnnotateurRepository;
@@ -31,6 +32,9 @@ public class AdminController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AffectationAnnotateurService affectationAnnotateurService;
+
     private String generateRandomPassword() {
         String digits = "0123456789";
         StringBuilder sb = new StringBuilder();
@@ -46,7 +50,7 @@ public class AdminController {
     @GetMapping("/admin/addAnnotateur")
     public String addAnnotateur(Model model) {
         model.addAttribute("user", new Annotateur());
-        return "admin/GererAnnotateur/addAnnotateur";
+        return "admin/GererAnnotateur/addAnnotateur-standalone";
     }
 
     @PostMapping(path = "/save")
@@ -122,14 +126,23 @@ public class AdminController {
                        @RequestParam(name = "page", defaultValue = "0") int page,
                        @RequestParam(name = "size", defaultValue = "5") int size,
                        @RequestParam(name = "keyword", defaultValue = "") String keyword) {
+        return listeAnnotateur(model, page, size, keyword);
+    }
 
+    @GetMapping("/admin/listeAnnotateur")
+    public String listeAnnotateurMinuscule(Model model,
+                       @RequestParam(name = "page", defaultValue = "0") int page,
+                       @RequestParam(name = "size", defaultValue = "5") int size,
+                       @RequestParam(name = "keyword", defaultValue = "") String keyword) {
+        return listeAnnotateur(model, page, size, keyword);
+    }
 
+    private String listeAnnotateur(Model model, int page, int size, String keyword) {
         Page<Annotateur> pageAnnotateur;
         if (keyword != null && !keyword.isEmpty()) {
             pageAnnotateur = annotateurRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCaseAndActiveTrue(
                     keyword, keyword, PageRequest.of(page, size));
         } else {
-
             pageAnnotateur = annotateurRepository.findByActiveTrue(PageRequest.of(page, size));
         }
 
@@ -141,14 +154,23 @@ public class AdminController {
         model.addAttribute("totalItems", pageAnnotateur.getTotalElements());
         model.addAttribute("totalPages", pageAnnotateur.getTotalPages());
 
-        return "admin/GererAnnotateur/ListeAnnotateur";
+        return "admin/GererAnnotateur/ListeAnnotateur-standalone";
+    }
+
+    @GetMapping("/admin/editAnnotateur")
+    public String editAnnotateur(Model model,
+                       @RequestParam int id,
+                       @RequestParam(defaultValue = "") String keyword,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "5") int size) {
+        return edit(model, id, keyword, page, size);
     }
 
     @GetMapping("/editUsers")
     public String edit(Model model,
                        @RequestParam int id,
-                       @RequestParam String keyword,
-                       @RequestParam int page,
+                       @RequestParam(defaultValue = "") String keyword,
+                       @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "5") int size) {
         Annotateur annotateur = annotateurRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Annotateur non trouvé"));
@@ -156,7 +178,15 @@ public class AdminController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
-        return "admin/GererAnnotateur/editUsers";
+        return "admin/GererAnnotateur/editUsers-standalone";
+    }
+
+    @GetMapping("/admin/deleteAnnotateur")
+    public String deleteAnnotateur(@RequestParam(name = "id") int id,
+                         @RequestParam(defaultValue = "") String keyword,
+                         @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "5") int size) {
+        return delete(id, keyword, page, size);
     }
 
     @GetMapping("/deleteUser")
@@ -167,10 +197,20 @@ public class AdminController {
                          @RequestParam(defaultValue = "5") int size) {
         Annotateur annotateur = annotateurRepository.findById(id).orElse(null);
         if (annotateur != null) {
-            annotateur.setActive(false);
-            annotateurRepository.saveAndFlush(annotateur);
+            try {
+                // Réaffecter les tâches de l'annotateur à d'autres annotateurs
+                int reassignedCount = affectationAnnotateurService.reassignTasksForAllDatasets(annotateur);
+                System.out.println("Total de " + reassignedCount + " tâches réaffectées pour l'annotateur " + annotateur.getPrenom() + " " + annotateur.getNom());
+
+                // Désactiver l'annotateur (ne pas le supprimer complètement)
+                annotateur.setActive(false);
+                annotateurRepository.saveAndFlush(annotateur);
+            } catch (Exception e) {
+                System.err.println("Erreur lors de la suppression de l'annotateur : " + e.getMessage());
+                e.printStackTrace();
+            }
         }
-        return "redirect:/admin/ListeAnnotateur?page="+page+"&keyword="+keyword+"&size="+size;
+        return "redirect:/admin/listeAnnotateur?page="+page+"&keyword="+keyword+"&size="+size;
     }
 }
 

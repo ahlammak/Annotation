@@ -57,12 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>Annotateurs</span>
           </a>
         </li>
-        <li class="${isActive.tasks ? 'active' : ''}">
-          <a href="/admin/tasks">
-            <i class="material-icons">assignment</i>
-            <span>Tâches</span>
-          </a>
-        </li>
+
         <li>
           <a href="/logout">
             <i class="material-icons">exit_to_app</i>
@@ -103,30 +98,30 @@ document.addEventListener('DOMContentLoaded', function() {
   // Créer le wrapper pour le contenu
   const contentWrapper = document.createElement('div');
   contentWrapper.className = 'content-wrapper';
-  
+
   // Déplacer le contenu existant dans le wrapper
   const mainContent = document.createElement('div');
   mainContent.className = 'main-content';
-  
+
   // Déplacer tous les enfants du conteneur dans le contenu principal
   while (container.firstChild) {
     mainContent.appendChild(container.firstChild);
   }
-  
+
   // Assembler la structure
   contentWrapper.appendChild(navbar);
   contentWrapper.appendChild(mainContent);
-  
+
   // Vider le conteneur et ajouter la nouvelle structure
   container.appendChild(sidebar);
   container.appendChild(contentWrapper);
-  
+
   // Ajouter la classe app-container au conteneur
   container.classList.add('app-container');
-  
+
   // Ajouter les écouteurs d'événements
   setupEventListeners();
-  
+
   /**
    * Détermine le titre de la page en fonction de l'URL
    */
@@ -135,17 +130,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (isActive.datasets) return 'Gestion des Datasets';
     if (isActive.annotateurs) return 'Gestion des Annotateurs';
     if (isActive.tasks) return 'Gestion des Tâches';
-    
+
     // Essayer de récupérer le titre depuis la balise title
     const titleElement = document.querySelector('title');
     if (titleElement) {
       const title = titleElement.textContent.split('-')[0].trim();
       return title;
     }
-    
+
     return 'Administration';
   }
-  
+
   /**
    * Configure les écouteurs d'événements pour la sidebar et la navbar
    */
@@ -157,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
         container.classList.toggle('sidebar-collapsed');
       });
     }
-    
+
     // Menu toggle (mobile)
     const menuToggle = document.getElementById('menu-toggle');
     if (menuToggle) {
@@ -165,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         container.classList.toggle('sidebar-mobile-open');
       });
     }
-    
+
     // User dropdown
     const userDropdown = document.querySelector('.user-dropdown');
     if (userDropdown) {
@@ -173,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
         this.classList.toggle('open');
       });
     }
-    
+
     // Fermer le dropdown quand on clique ailleurs
     document.addEventListener('click', function(event) {
       if (userDropdown && !userDropdown.contains(event.target)) {

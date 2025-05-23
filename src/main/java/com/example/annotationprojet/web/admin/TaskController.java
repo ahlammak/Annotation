@@ -98,7 +98,7 @@ public class TaskController {
             model.addAttribute("annotateurs", annotateurs);
 
             logger.info("Fin de la méthode showAssignTasksPage");
-            return "admin/Dataset/AssignTasks";
+            return "admin/Dataset/assignTasks-standalone";
         } catch (Exception e) {
             logger.error("Erreur dans showAssignTasksPage: {}", e.getMessage(), e);
             model.addAttribute("errorMessage", "Une erreur s'est produite lors du chargement de la page: " + e.getMessage());
@@ -108,7 +108,7 @@ public class TaskController {
             model.addAttribute("datasetsDejaAffectesIds", new ArrayList<Integer>());
             model.addAttribute("allDatasets", new ArrayList<DataSet>());
             model.addAttribute("annotateurs", new ArrayList<Annotateur>());
-            return "admin/Dataset/AssignTasks";
+            return "admin/Dataset/assignTasks-standalone";
         }
     }
 

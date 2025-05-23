@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affecter des Tâches</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="/css/sidebar-navbar.css">
+    <style>
+        /* Styles de base */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.25rem;
+        }
+
+        .nav-link {
+            color: #555;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-link.active {
+            background-color: #f0f0f0;
+            color: #4361ee;
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding: 1rem 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        /* Styles pour la page d'affectation des tâches */
+        .container {
+            max-width: 1200px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: #4361ee;
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border-bottom: none;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e9ecef;
+            z-index: 0;
+        }
+
+        .step {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 33.33%;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background-color: #4361ee;
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background-color: #38b000;
+            color: white;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #495057;
+            margin-top: 5px;
+        }
+
+        .step.active .step-title {
+            color: #4361ee;
+        }
+
+        .step.completed .step-title {
+            color: #38b000;
+        }
+
+        .selection-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .selection-card:hover {
+            border-color: #4361ee;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+        }
+
+        .selection-card.selected {
+            border-color: #4361ee;
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .selection-card .card-title {
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 5px;
+        }
+
+        .selection-card .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .selection-card .form-check-input {
+            margin-top: 0.3rem;
+        }
+
+        .annotator-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .annotator-card:hover {
+            border-color: #4361ee;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+        }
+
+        .annotator-card.selected {
+            border-color: #4361ee;
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .annotator-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4361ee;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .annotator-info {
+            flex-grow: 1;
+        }
+
+        .annotator-name {
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 0;
+        }
+
+        .annotator-login {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .btn-primary {
+            background-color: #4361ee;
+            border-color: #4361ee;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a56d4;
+            border-color: #3a56d4;
+        }
+
+        .btn-success {
+            background-color: #38b000;
+            border-color: #38b000;
+        }
+
+        .btn-success:hover {
+            background-color: #2d9200;
+            border-color: #2d9200;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.4em 0.8em;
+        }
+
+        .badge.rounded-pill {
+            padding-right: 0.8em;
+            padding-left: 0.8em;
+        }
+
+        .dataset-list, .annotator-list {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #e3e6f0 #f8f9fa;
+        }
+
+        .dataset-list::-webkit-scrollbar, .annotator-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dataset-list::-webkit-scrollbar-track, .annotator-list::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .dataset-list::-webkit-scrollbar-thumb, .annotator-list::-webkit-scrollbar-thumb {
+            background-color: #e3e6f0;
+            border-radius: 6px;
+        }
+
+        .date-picker-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 20px;
+        }
+
+        .date-picker-icon {
+            font-size: 2rem;
+            color: #4361ee;
+            margin-bottom: 15px;
+        }
+
+        .form-control:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Styles minimalistes pour la sélection de dataset */
+        .dataset-table {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .dataset-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .dataset-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dataset-row.selected {
+            background-color: #f0f7ff;
+            border-left: 3px solid #0d6efd;
+        }
+
+        .dataset-row-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            margin-bottom: 2px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            border-left: 2px solid #28a745;
+            font-size: 0.9rem;
+        }
+
+        .dataset-details {
+            color: #6c757d;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .dataset-details:hover {
+            background-color: #e9ecef;
+            color: #0d6efd;
+        }
+
+        .form-check-input:checked + .form-check-label {
+            font-weight: 500;
+        }
+
+        /* Badge minimaliste */
+        .badge {
+            font-weight: normal;
+            font-size: 0.75rem;
+            padding: 0.25em 0.5em;
+        }
+
+        /* Bouton de retour */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #4361ee;
+        }
+
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Le contenu de la navbar sera injecté par admin-layout.js -->
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <a href="/admin/Dataset" class="back-link">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+
+            <!-- Alerte pour les messages -->
+            <div th:if="${message}" th:class="${'alert ' + alertClass}" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Alerte pour les erreurs -->
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Alerte pour les informations -->
+            <div th:if="${infoMessage}" class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <span th:text="${infoMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Titre de la page -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="mb-0"><i class="bi bi-person-check-fill me-2"></i>Affecter des Tâches</h3>
+            </div>
+
+            <!-- Indicateur d'étapes -->
+            <div class="step-indicator mb-5">
+                <div class="step completed">
+                    <div class="step-circle">1</div>
+                    <div class="step-title">Sélection du Dataset</div>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">2</div>
+                    <div class="step-title">Sélection des Annotateurs</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-title">Définition de la Date Limite</div>
+                </div>
+            </div>
+
+            <!-- Formulaire d'affectation des tâches -->
+            <form th:action="@{/admin/processTaskAssignment}" method="post">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Affectation des tâches</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <strong>Comment ça fonctionne :</strong>
+                            <p class="mb-0">1. Sélectionnez un dataset contenant des couples de textes à annoter</p>
+                            <p class="mb-0">2. Choisissez un ou plusieurs annotateurs qui effectueront le travail</p>
+                            <p class="mb-0">3. Définissez une date limite pour l'achèvement des tâches</p>
+                            <p class="mb-0 mt-2">Les couples de texte seront distribués équitablement entre les annotateurs sélectionnés.</p>
+                        </div>
+
+                        <div class="row">
+                            <!-- Sélection du dataset (version minimaliste) -->
+                            <div class="col-md-6 mb-4">
+                                <h5 class="mb-3">1. Sélectionner un Dataset</h5>
+
+                                <!-- Datasets disponibles -->
+                                <div class="mb-3" th:if="${!datasets.isEmpty()}">
+                                    <div class="dataset-table">
+                                        <div th:each="dataset : ${datasets}" class="dataset-row"
+                                             th:id="'dataset-item-' + ${dataset.ID}" onclick="selectDataset(this, 'dataset-' + ${dataset.ID})">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="datasetId"
+                                                       th:id="'dataset-' + ${dataset.ID}" th:value="${dataset.ID}">
+                                                <label class="form-check-label" th:for="'dataset-' + ${dataset.ID}">
+                                                    <span th:text="${dataset.nom}">Nom du Dataset</span>
+                                                    <small class="text-muted ms-2" th:text="${dataset.coupleTexte != null ? '(' + dataset.coupleTexte.size() + ' couples)' : '(0 couples)'}"></small>
+                                                </label>
+                                            </div>
+                                            <a th:href="@{/admin/viewDataset(id=${dataset.ID})}" class="dataset-details" onclick="event.stopPropagation();">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Datasets déjà affectés (affichage informatif uniquement) -->
+                                <div class="mb-3" th:if="${datasetsDejaAffectes != null && !datasetsDejaAffectes.isEmpty()}">
+                                    <h6 class="text-muted small mb-2">Datasets déjà affectés :</h6>
+                                    <div class="dataset-table already-assigned">
+                                        <div th:each="dataset : ${datasetsDejaAffectes}" class="dataset-row-info">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-check-circle-fill text-success me-2 small"></i>
+                                                <span th:text="${dataset.nom}">Nom du Dataset</span>
+                                                <small class="text-muted ms-2" th:text="${dataset.coupleTexte != null ? '(' + dataset.coupleTexte.size() + ' couples)' : '(0 couples)'}"></small>
+                                            </div>
+                                            <a th:href="@{/admin/viewDataset(id=${dataset.ID})}" class="dataset-details">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Message si aucun dataset n'est disponible -->
+                                <div class="alert alert-warning py-2" th:if="${datasets.isEmpty() && (datasetsDejaAffectes == null || datasetsDejaAffectes.isEmpty())}">
+                                    <small><i class="bi bi-exclamation-triangle me-1"></i>Aucun dataset disponible. <a th:href="@{/admin/addDataset}" class="alert-link">Ajouter un dataset</a></small>
+                                </div>
+
+                                <!-- Message pour les datasets déjà affectés -->
+                                <div class="alert alert-warning" th:if="${datasets != null && datasets.isEmpty() && datasetsDejaAffectes != null && !datasetsDejaAffectes.isEmpty()}">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <strong>Tous les datasets ont déjà été affectés.</strong> Vous pouvez réaffecter un dataset existant ou <a th:href="@{/admin/addDataset}" class="alert-link">ajouter un nouveau dataset</a>.
+                                </div>
+                            </div>
+
+                            <!-- Sélection des annotateurs -->
+                            <div class="col-md-6 mb-4">
+                                <h5 class="section-title"><i class="bi bi-person-check me-2 text-primary"></i>Étape 2: Sélectionner les Annotateurs</h5>
+
+                                <div th:if="${!annotateurs.isEmpty()}" class="annotator-list">
+                                    <div th:each="annotateur : ${annotateurs}" class="annotator-card" th:id="'annotateur-card-' + ${annotateur.ID}" onclick="selectAnnotateur(this, 'annotateur-' + ${annotateur.ID})">
+                                        <div class="form-check me-2">
+                                            <input class="form-check-input" type="checkbox"
+                                                   th:id="'annotateur-' + ${annotateur.ID}"
+                                                   th:value="${annotateur.ID}"
+                                                   name="annotateurIds">
+                                        </div>
+                                        <div class="annotator-avatar" th:text="${#strings.substring(annotateur.prenom, 0, 1) + #strings.substring(annotateur.nom, 0, 1)}">AA</div>
+                                        <div class="annotator-info">
+                                            <div class="annotator-name" th:text="${annotateur.prenom + ' ' + annotateur.nom}">Nom de l'annotateur</div>
+                                            <div class="annotator-login" th:text="${annotateur.login}">Login</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllAnnotateurs()">Désélectionner tout</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllAnnotateurs()">Sélectionner tout</button>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning" th:if="${annotateurs.isEmpty()}">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    Aucun annotateur disponible. <a th:href="@{/admin/ListeAnnotateur}" class="alert-link">Ajouter des annotateurs</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date limite -->
+                        <div class="row justify-content-center mt-4 mb-3">
+                            <div class="col-md-6">
+                                <h5 class="section-title"><i class="bi bi-calendar-event me-2 text-primary"></i>Étape 3: Définir une Date Limite</h5>
+
+                                <div class="date-picker-container">
+                                    <div class="text-center mb-3">
+                                        <i class="bi bi-calendar-check date-picker-icon"></i>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="dateLimite" class="form-label">Date limite pour les tâches</label>
+                                        <input type="date" class="form-control form-control-lg" id="dateLimite" name="dateLimite" required>
+                                        <div class="form-text text-muted mt-2">
+                                            <i class="bi bi-info-circle me-1"></i> Cette date sera utilisée pour indiquer aux annotateurs quand leurs tâches doivent être terminées.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bouton de soumission -->
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn btn-success btn-lg px-5" id="submitButton" disabled>
+                                <i class="bi bi-check-circle-fill me-2"></i>Affecter les Tâches
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <span>© 2025 Annotation App. Tous droits réservés.</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/admin-layout.js"></script>
+    <script>
+        // Fonction pour sélectionner un dataset
+        function selectDataset(element, inputId) {
+            // Désélectionner tous les datasets
+            document.querySelectorAll('.dataset-row').forEach(row => {
+                row.classList.remove('selected');
+            });
+
+            // Sélectionner le dataset cliqué
+            element.classList.add('selected');
+
+            // Cocher le radio button
+            document.getElementById(inputId).checked = true;
+
+            // Vérifier si on peut activer le bouton de soumission
+            checkSubmitButton();
+        }
+
+        // Fonction pour sélectionner un annotateur
+        function selectAnnotateur(element, inputId) {
+            // Basculer la classe selected
+            element.classList.toggle('selected');
+
+            // Basculer le checkbox
+            const checkbox = document.getElementById(inputId);
+            checkbox.checked = !checkbox.checked;
+
+            // Vérifier si on peut activer le bouton de soumission
+            checkSubmitButton();
+        }
+
+        // Fonction pour sélectionner tous les annotateurs
+        function selectAllAnnotateurs() {
+            document.querySelectorAll('.annotator-card').forEach(card => {
+                card.classList.add('selected');
+                const inputId = card.id.replace('annotateur-card-', 'annotateur-');
+                document.getElementById(inputId).checked = true;
+            });
+
+            // Vérifier si on peut activer le bouton de soumission
+            checkSubmitButton();
+        }
+
+        // Fonction pour désélectionner tous les annotateurs
+        function deselectAllAnnotateurs() {
+            document.querySelectorAll('.annotator-card').forEach(card => {
+                card.classList.remove('selected');
+                const inputId = card.id.replace('annotateur-card-', 'annotateur-');
+                document.getElementById(inputId).checked = false;
+            });
+
+            // Vérifier si on peut activer le bouton de soumission
+            checkSubmitButton();
+        }
+
+        // Fonction pour vérifier si on peut activer le bouton de soumission
+        function checkSubmitButton() {
+            const datasetSelected = document.querySelector('input[name="datasetId"]:checked') !== null;
+            const annotateurSelected = document.querySelector('input[name="annotateurIds"]:checked') !== null;
+            const dateLimite = document.getElementById('dateLimite').value !== '';
+
+            document.getElementById('submitButton').disabled = !(datasetSelected && annotateurSelected && dateLimite);
+        }
+
+        // Ajouter un écouteur d'événement pour le champ de date
+        document.getElementById('dateLimite').addEventListener('change', checkSubmitButton);
+
+        // Initialiser la date limite à aujourd'hui + 7 jours
+        window.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+
+            const year = nextWeek.getFullYear();
+            const month = String(nextWeek.getMonth() + 1).padStart(2, '0');
+            const day = String(nextWeek.getDate()).padStart(2, '0');
+
+            document.getElementById('dateLimite').value = `${year}-${month}-${day}`;
+
+            // Vérifier si on peut activer le bouton de soumission
+            checkSubmitButton();
+        });
+    </script>
+</body>
+</html>

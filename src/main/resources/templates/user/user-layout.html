@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user-layout}">
+<head>
+    <title>Tableau de bord</title>
+    <th:block layout:fragment="css">
+        <style>
+            /* Styles spécifiques à cette page */
+            /* Section de bienvenue */
+            .welcome-section {
+                text-align: center;
+                margin-bottom: 2.5rem;
+                padding: 3rem 2rem;
+                background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+                border-radius: var(--card-radius);
+                color: white;
+                box-shadow: 0 20px 25px -5px rgba(0, 153, 255, 0.25), 0 10px 10px -5px rgba(0, 153, 255, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .welcome-section::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+                animation: pulse 15s infinite linear;
+                z-index: 1;
+            }
+            
+            .welcome-section::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 30%;
+                background: linear-gradient(to top, rgba(0,0,0,0.1), rgba(0,0,0,0));
+                z-index: 1;
+            }
+            
+            .welcome-title {
+                font-size: 2.25rem;
+                font-weight: 700;
+                margin-bottom: 0.75rem;
+                position: relative;
+                z-index: 2;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .welcome-subtitle {
+                font-size: 1.1rem;
+                opacity: 0.95;
+                position: relative;
+                z-index: 2;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            
+            /* Statistiques */
+            .stats-container {
+                background-color: rgba(255, 255, 255, 0.9);
+                border-radius: var(--card-radius);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+                padding: 2rem;
+                margin-bottom: 2.5rem;
+                border: 1px solid rgba(226, 232, 240, 0.7);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            
+            .stats-title {
+                font-size: 1.35rem;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                color: var(--text-primary);
+                display: flex;
+                align-items: center;
+            }
+            
+            .stats-title i {
+                margin-right: 0.75rem;
+                color: var(--primary-color);
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1.5rem;
+            }
+            
+            .stat-item {
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+                border-radius: var(--card-radius);
+                padding: 1.5rem;
+                text-align: center;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+                border: 1px solid rgba(226, 232, 240, 0.7);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .stat-item:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            
+            .stat-value {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: var(--primary-color);
+                margin-bottom: 0.75rem;
+                line-height: 1;
+            }
+            
+            .stat-label {
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                font-weight: 500;
+            }
+            
+            /* Cartes d'action */
+            .dashboard-cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 2rem;
+            }
+            
+            .dashboard-card {
+                background-color: rgba(255, 255, 255, 0.9);
+                border-radius: var(--card-radius);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+                padding: 2rem;
+                display: flex;
+                flex-direction: column;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+                border: 1px solid rgba(226, 232, 240, 0.7);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            
+            .dashboard-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 25px 30px -12px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                border-color: rgba(226, 232, 240, 0.9);
+            }
+            
+            .dashboard-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 6px;
+            }
+            
+            .dashboard-card:nth-child(1)::before {
+                background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            }
+            
+            .dashboard-card:nth-child(2)::before {
+                background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            }
+            
+            .card-icon {
+                width: 70px;
+                height: 70px;
+                border-radius: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.75rem;
+                transition: all 0.3s ease;
+            }
+            
+            .card-icon.tasks {
+                background: linear-gradient(135deg, rgba(0, 153, 255, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+                box-shadow: 0 10px 15px -3px rgba(0, 153, 255, 0.1), 0 4px 6px -2px rgba(0, 153, 255, 0.05);
+            }
+            
+            .card-icon.progress {
+                background: linear-gradient(135deg, rgba(0, 204, 102, 0.1) 0%, rgba(0, 153, 255, 0.1) 100%);
+                box-shadow: 0 10px 15px -3px rgba(0, 204, 102, 0.1), 0 4px 6px -2px rgba(0, 204, 102, 0.05);
+            }
+            
+            .dashboard-card:hover .card-icon {
+                transform: scale(1.05);
+            }
+            
+            .dashboard-card:hover .card-icon.tasks {
+                box-shadow: 0 15px 20px -3px rgba(0, 153, 255, 0.15), 0 8px 10px -2px rgba(0, 153, 255, 0.1);
+            }
+            
+            .dashboard-card:hover .card-icon.progress {
+                box-shadow: 0 15px 20px -3px rgba(0, 204, 102, 0.15), 0 8px 10px -2px rgba(0, 204, 102, 0.1);
+            }
+            
+            .card-icon i {
+                font-size: 2rem;
+            }
+            
+            .card-icon.tasks i {
+                color: var(--primary-color);
+            }
+            
+            .card-icon.progress i {
+                color: var(--secondary-color);
+            }
+            
+            .card-title {
+                font-size: 1.35rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                color: var(--text-primary);
+            }
+            
+            .card-text {
+                color: var(--text-secondary);
+                margin-bottom: 1.75rem;
+                flex: 1;
+            }
+            
+            .card-link {
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                padding: 0.75rem 1.25rem;
+                border-radius: var(--button-radius);
+                margin-top: auto;
+            }
+            
+            .card-link.tasks {
+                background-color: var(--primary-color);
+                color: white;
+            }
+            
+            .card-link.progress {
+                background-color: var(--secondary-color);
+                color: white;
+            }
+            
+            .card-link:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            
+            .card-link.tasks:hover {
+                background-color: var(--primary-dark);
+            }
+            
+            .card-link.progress:hover {
+                background-color: var(--secondary-dark);
+            }
+            
+            .card-link i {
+                margin-left: 0.5rem;
+                transition: transform 0.3s ease;
+            }
+            
+            .card-link:hover i {
+                transform: translateX(5px);
+            }
+            
+            /* Animation pour le fond de la section de bienvenue */
+            @keyframes pulse {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+            
+            /* Responsive */
+            @media (max-width: 768px) {
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                
+                .dashboard-cards {
+                    grid-template-columns: 1fr;
+                }
+                
+                .welcome-title {
+                    font-size: 1.75rem;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .welcome-section {
+                    padding: 2rem 1rem;
+                }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Section de bienvenue -->
+        <div class="welcome-section fadeIn">
+            <h1 class="welcome-title">
+                <i class="bi bi-person-circle me-2"></i>Bienvenue sur votre tableau de bord
+            </h1>
+            <p class="welcome-subtitle">Vous pouvez consulter et gérer vos tâches d'annotation à partir de cette interface.</p>
+        </div>
+        
+        <!-- Statistiques -->
+        <div class="stats-container fadeIn">
+            <h2 class="stats-title">
+                <i class="bi bi-graph-up"></i> Vos statistiques
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" th:text="${totalTasks != null ? totalTasks : '0'}">0</div>
+                    <div class="stat-label">Tâches assignées</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" th:text="${completedTasks != null ? completedTasks : '0'}">0</div>
+                    <div class="stat-label">Tâches terminées</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" th:text="${pendingTasks != null ? pendingTasks : '0'}">0</div>
+                    <div class="stat-label">Tâches en cours</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" th:text="${totalAnnotations != null ? totalAnnotations : '0'}">0</div>
+                    <div class="stat-label">Annotations réalisées</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cartes d'action -->
+        <div class="dashboard-cards">
+            <div class="dashboard-card fadeIn">
+                <div class="card-icon tasks">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <h2 class="card-title">Mes Tâches</h2>
+                <p class="card-text">Consultez la liste de vos tâches d'annotation assignées et commencez à travailler sur celles qui sont en attente.</p>
+                <a href="/user/tasks" class="card-link tasks">
+                    Voir mes tâches
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="dashboard-card fadeIn">
+                <div class="card-icon progress">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h2 class="card-title">Mon Avancement</h2>
+                <p class="card-text">Suivez votre progression dans les différentes tâches d'annotation qui vous ont été assignées.</p>
+                <a href="/user/tasks" class="card-link progress">
+                    Voir mon avancement
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="scripts">
+        <script>
+            // Scripts spécifiques à cette page
+        </script>
+    </th:block>
+</body>
+</html>

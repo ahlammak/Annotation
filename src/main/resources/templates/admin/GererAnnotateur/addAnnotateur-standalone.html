@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Annotateur</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="/css/sidebar-navbar.css">
+    <style>
+        /* Styles de base */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.25rem;
+        }
+
+        .nav-link {
+            color: #555;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-link.active {
+            background-color: #f0f0f0;
+            color: #4361ee;
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding: 1rem 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        /* Styles pour la page d'ajout d'un annotateur */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 0.5rem;
+            color: #e63946;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #4361ee;
+        }
+
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+
+        /* Card */
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            background-color: white;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        /* Form */
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #4361ee;
+            border-color: #4361ee;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a56d4;
+            border-color: #3a56d4;
+        }
+
+        .btn-secondary {
+            color: #6c757d;
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Le contenu de la navbar sera injecté par admin-layout.js -->
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <a th:href="@{/admin/listeAnnotateur(keyword=${param.keyword},size=${param.size})}" class="back-link">
+                <i class="bi bi-arrow-left"></i> Retour à la liste des annotateurs
+            </a>
+
+            <div class="page-header d-flex justify-content-between align-items-center mb-4">
+                <h1 class="page-title mb-0">
+                    <i class="bi bi-person-plus me-2"></i> Ajouter un Annotateur
+                </h1>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-person-fill-add me-2 text-primary"></i> Informations de l'annotateur</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" th:action="@{/save}" th:object="${user}">
+                        <input type="hidden" name="keyword" th:value="${param.keyword}">
+                        <input type="hidden" name="size" th:value="${param.size}">
+                        <input type="hidden" name="active" value="true">
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="nom" class="form-label fw-medium">Nom</label>
+                                <input type="text" class="form-control form-control-lg" id="nom" name="nom" th:value="${user.nom}" placeholder="Entrez le nom" required>
+                                <span class="text-danger" th:errors="${user.nom}"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="prenom" class="form-label fw-medium">Prénom</label>
+                                <input type="text" class="form-control form-control-lg" id="prenom" name="prenom" th:value="${user.prenom}" placeholder="Entrez le prénom" required>
+                                <span class="text-danger" th:errors="${user.prenom}"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="login" class="form-label fw-medium">Login</label>
+                            <input type="text" class="form-control form-control-lg" id="login" name="login" th:value="${user.login}" placeholder="Entrez le login" required>
+                            <div class="form-text">Ce login sera utilisé par l'annotateur pour se connecter à l'application.</div>
+                            <span class="text-danger" th:errors="${user.login}"></span>
+                        </div>
+
+                        <div class="alert alert-info d-flex align-items-center mb-4">
+                            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                            <div>
+                                <strong>Information sur le mot de passe</strong>
+                                <p class="mb-0">Un mot de passe aléatoire sera généré automatiquement pour cet annotateur.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-5">
+                            <a th:href="@{/admin/listeAnnotateur(keyword=${param.keyword},size=${param.size})}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left me-2"></i> Retour à la liste
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-check-lg me-2"></i> Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <span>© 2025 Annotation App. Tous droits réservés.</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/admin-layout.js"></script>
+</body>
+</html>

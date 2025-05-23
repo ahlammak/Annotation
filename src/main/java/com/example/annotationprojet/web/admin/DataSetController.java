@@ -1,9 +1,11 @@
 package com.example.annotationprojet.web.admin;
 import com.example.annotationprojet.Service.AffectationAnnotateurService;
+import com.example.annotationprojet.Service.AnnotationService;
 import com.example.annotationprojet.Service.AsyncDataSetService;
 import com.example.annotationprojet.Service.DataSetService;
 import com.example.annotationprojet.Service.ProgressService;
 import com.example.annotationprojet.entities.Annotateur;
+import com.example.annotationprojet.entities.Classes;
 import com.example.annotationprojet.entities.DataSet;
 import com.example.annotationprojet.entities.Tache;
 import com.example.annotationprojet.entities.coupleTexte;
@@ -44,6 +46,9 @@ public class DataSetController {
 
     @Autowired
     private TacheRepository tacheRepository;
+
+    @Autowired
+    private AnnotationService annotationService;
 
     @Autowired
     private ProgressService progressService;
@@ -142,6 +147,21 @@ public class DataSetController {
                 System.out.println("Statistiques d'avancement calculées : " + statistics);
             } catch (Exception e) {
                 System.err.println("Erreur lors du calcul de l'avancement : " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            // Récupérer les couples de textes annotés pour la modification
+            try {
+                List<coupleTexte> annotatedCouples = annotationService.getAnnotatedCouplesByDataset(id);
+                model.addAttribute("annotatedCouples", annotatedCouples);
+
+                // Récupérer les classes disponibles pour la modification
+                List<Classes> classes = dataSet.getClasses();
+                model.addAttribute("classes", classes);
+
+                System.out.println("Nombre de couples annotés récupérés : " + (annotatedCouples != null ? annotatedCouples.size() : "null"));
+            } catch (Exception e) {
+                System.err.println("Erreur lors de la récupération des annotations : " + e.getMessage());
                 e.printStackTrace();
             }
 

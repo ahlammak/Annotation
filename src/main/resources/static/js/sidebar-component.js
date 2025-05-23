@@ -20,8 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const isActive = {
     dashboard: window.location.pathname.includes('/admin/admin'),
     datasets: window.location.pathname.includes('/admin/Dataset'),
-    annotateurs: window.location.pathname.includes('/admin/listeAnnotateur') || window.location.pathname.includes('/admin/ListeAnnotateur'),
-    tasks: window.location.pathname.includes('/admin/tasks')
+    annotateurs: window.location.pathname.includes('/admin/listeAnnotateur') || window.location.pathname.includes('/admin/ListeAnnotateur')
   };
 
   // Créer le contenu de la sidebar
@@ -55,12 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>Annotateurs</span>
           </a>
         </li>
-        <li class="${isActive.tasks ? 'active' : ''}">
-          <a href="/admin/tasks">
-            <i class="material-icons">assignment</i>
-            <span>Tâches</span>
-          </a>
-        </li>
+
         <li>
           <a href="/logout">
             <i class="material-icons">exit_to_app</i>
