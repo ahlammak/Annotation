@@ -1,176 +1,554 @@
 <!DOCTYPE html>
-<html lang="fr"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Annotations du Dataset</title>
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="/css/sidebar-navbar.css">
+
     <style>
+        /* Styles spécifiques pour la page des annotations */
+        body {
+            background: linear-gradient(135deg, #2E86AB 0%, #0E4B99 50%, #1A1A2E 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(46, 134, 171, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(14, 75, 153, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(26, 26, 46, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
         .card {
+            border: none;
             border-radius: 15px;
-            box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
-            transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
-            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(15, 15, 35, 0.2);
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+        }
+
         .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            padding: 15px 20px;
-            font-weight: bold;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px 15px 0 0;
+            padding: 1.25rem;
+            position: relative;
         }
-        .text-card {
+
+        .text-box {
+            padding: 0.75rem;
             background-color: #f8f9fa;
+            border-radius: 6px;
             border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        .class-btn {
-            margin: 5px;
-            border-radius: 20px;
-            transition: all 0.3s;
-        }
-        .class-btn.selected {
-            background-color: #0d6efd;
-            color: white;
-        }
-        .annotation-row {
-            border-bottom: 1px solid #e9ecef;
-            padding: 15px 0;
-        }
-        .annotation-row:last-child {
-            border-bottom: none;
-        }
-        .validation-message {
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .validation-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .validation-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .annotateur-info {
+            margin-bottom: 0.5rem;
             font-size: 0.9rem;
+            line-height: 1.5;
+            min-height: 60px;
+            color: #000000; /* Texte en noir */
+        }
+
+        .text-box:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #2E86AB;
+            box-shadow: 0 0 0 0.2rem rgba(46, 134, 171, 0.2);
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.4em 0.8em;
+        }
+
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+            border-color: #2E86AB;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0E4B99, #1A1A2E);
+            border-color: #0E4B99;
+            transform: translateY(-1px);
+        }
+
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            border-top: none;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .table td {
+            vertical-align: middle;
+            border-color: #e9ecef;
+        }
+
+        .annotation-form {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
             color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #4361ee;
+            transform: translateX(-3px);
+        }
+
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 6px;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            background-color: #4361ee;
+            border-radius: 6px;
+        }
+
+        .text-box {
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            min-height: 60px;
+        }
+
+        .annotation-form {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
         }
     </style>
 </head>
 <body>
-<div layout:fragment="content1" class="container py-5">
-    <!-- Messages d'alerte -->
-    <div th:if="${message}" th:class="${'alert ' + alertClass}" role="alert">
-        <i class="bi" th:classappend="${alertClass == 'alert-success' ? 'bi-check-circle' : 'bi-exclamation-triangle'}"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <!-- Titre et bouton de retour -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Annotations du Dataset</h3>
-        <a th:href="@{/admin/viewDataset(id=${dataset.ID})}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Retour au dataset
-        </a>
-    </div>
-
-    <!-- Informations du dataset -->
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="bi bi-database me-2"></i>
-                <span th:text="${dataset.nom}">Nom du Dataset</span>
-            </h5>
-            <span class="badge bg-primary" th:text="${annotatedCouples.size() + ' annotations'}">0 annotations</span>
-        </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-3 fw-bold">Description:</div>
-                <div class="col-md-9" th:text="${dataset.description}">Description du dataset</div>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="app-sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="material-icons">dashboard</i>
+                <span>Annotation App</span>
             </div>
-            <div class="row mb-3">
-                <div class="col-md-3 fw-bold">Classes disponibles:</div>
-                <div class="col-md-9">
-                    <div th:if="${classes != null && !classes.isEmpty()}">
-                        <span th:each="classe : ${classes}" class="badge bg-secondary me-2" th:text="${classe.nomClasse}"></span>
-                    </div>
-                    <div th:if="${classes == null || classes.isEmpty()}" class="text-muted">
-                        Aucune classe définie
+            <button id="sidebar-toggle" class="sidebar-toggle">
+                <i class="material-icons">chevron_left</i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="/admin/admin">
+                        <i class="material-icons">dashboard</i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/admin/Dataset">
+                        <i class="material-icons">storage</i>
+                        <span>Datasets</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/listeAnnotateur">
+                        <i class="material-icons">people</i>
+                        <span>Annotateurs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/statistics">
+                        <i class="material-icons">bar_chart</i>
+                        <span>Statistiques</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Navbar -->
+        <div class="app-navbar">
+            <div class="navbar-left">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="material-icons">menu</i>
+                </button>
+                <h2 class="page-title">Annotations du Dataset</h2>
+            </div>
+            <div class="navbar-right">
+                <div class="navbar-item user-dropdown">
+                    <div class="avatar">A</div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="material-icons">person</i>
+                            <span>Profil</span>
+                        </a>
+                        <a href="/logout" class="dropdown-item">
+                            <i class="material-icons">exit_to_app</i>
+                            <span>Déconnexion</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Liste des annotations -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Liste des annotations</h5>
-        </div>
-        <div class="card-body">
-            <div th:if="${annotatedCouples == null || annotatedCouples.isEmpty()}" class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i> Aucune annotation trouvée pour ce dataset.
+        <!-- Main Content -->
+        <div class="main-content">
+            <a href="/admin/Dataset" class="back-link">
+                <i class="bi bi-arrow-left"></i> Retour aux datasets
+            </a>
+
+            <!-- Messages d'alerte -->
+            <div th:if="${message}" th:class="${'alert ' + alertClass}" role="alert">
+                <i class="bi" th:classappend="${alertClass == 'alert-success' ? 'bi-check-circle' : 'bi-exclamation-triangle'}"></i>
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div th:if="${annotatedCouples != null && !annotatedCouples.isEmpty()}">
-                <div class="annotation-row" th:each="couple : ${annotatedCouples}">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <h6>Texte 1</h6>
-                            <div class="text-card" th:text="${couple.texte1}"></div>
+            <!-- Informations du dataset -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-database me-2"></i>
+                            <span th:text="${dataset.nom}">Nom du Dataset</span>
+                        </h5>
+                        <span class="badge bg-light text-dark" th:text="${allCouples.size() + ' couples'}">0 couples</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Description:</div>
+                            <div class="col-md-9" th:text="${dataset.description}">Description du dataset</div>
                         </div>
-                        <div class="col-md-6">
-                            <h6>Texte 2</h6>
-                            <div class="text-card" th:text="${couple.texte2}"></div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Fichier:</div>
+                            <div class="col-md-9 text-truncate" th:text="${dataset.url}" th:title="${dataset.url}">Chemin du fichier</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Taille:</div>
+                            <div class="col-md-9" th:text="${allCouples.size() + ' couples de textes'}">0 couples de textes</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Classes:</div>
+                            <div class="col-md-9">
+                    <span th:if="${dataset.classes != null && !dataset.classes.isEmpty()}"
+                          th:each="classe : ${dataset.classes}"
+                          class="badge bg-primary me-1"
+                          th:text="${classe.nomClasse}">Nom de la classe</span>
+                                <span th:if="${dataset.classes == null || dataset.classes.isEmpty()}" class="badge bg-secondary">Aucune classe définie</span>
+                            </div>
+                        </div>
+
+                        <!-- Avancement du dataset -->
+                        <div class="row mb-3">
+                            <div class="col-md-3 fw-bold">Avancement:</div>
+                            <div class="col-md-9">
+                                <div th:if="${statistics != null}">
+                                    <div class="progress mb-2" style="height: 25px;">
+                                        <div class="progress-bar" role="progressbar"
+                                             th:style="'width: ' + ${statistics.progressPercentage} + '%;'"
+                                             th:aria-valuenow="${statistics.progressPercentage}"
+                                             aria-valuemin="0" aria-valuemax="100"
+                                             th:classappend="${statistics.progressPercentage == 100 ? 'bg-success' : (statistics.progressPercentage > 0 ? 'bg-primary' : 'bg-secondary')}">
+                                            <span th:text="${statistics.progressPercentage} + '%'"></span>
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted">
+                                        <span th:text="${statistics.annotatedCouples}"></span> couples annotés sur
+                                        <span th:text="${statistics.totalCouples}"></span>
+                                        (<span th:text="${statistics.totalAnnotateurs}"></span> annotateur(s) assigné(s))
+                                    </div>
+                                </div>
+                                <div th:unless="${statistics != null}" class="text-muted">
+                                    Aucune donnée d'avancement disponible
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="annotateur-info">
-                                <strong>Annotateur:</strong>
-                                <span th:if="${couple.annotation != null && couple.annotation.annotateur != null}"
-                                      th:text="${couple.annotation.annotateur.prenom + ' ' + couple.annotation.annotateur.nom}">
-                                </span>
-                                <span th:unless="${couple.annotation != null && couple.annotation.annotateur != null}">
-                                    Non spécifié
-                                </span>
-                            </div>
+                </div>
+
+                <!-- Tableau des annotateurs affectés -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Annotateurs affectés</h5>
+                        <span class="badge bg-primary text-white" th:text="${annotateurIdsDejaAffectes != null ? annotateurIdsDejaAffectes.size() + ' annotateur(s)' : '0 annotateur'}">0 annotateur</span>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${annotateurIdsDejaAffectes != null && !annotateurIdsDejaAffectes.isEmpty()}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Prénom</th>
+                                    <th>Nom</th>
+                                    <th>Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="annotateur : ${annotateurs}" th:if="${annotateurIdsDejaAffectes.contains(annotateur.ID)}">
+                                    <td th:text="${annotateur.ID}">ID</td>
+                                    <td th:text="${annotateur.prenom}">Prénom</td>
+                                    <td th:text="${annotateur.nom}">Nom</td>
+                                    <td th:text="${annotateur.login}">Login</td>
+                                    <td>
+                                        <a th:href="@{/admin/removeAnnotateurFromDataset(datasetId=${dataset.ID}, annotateurId=${annotateur.ID})}"
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet annotateur du dataset ?')">
+                                            <i class="bi bi-trash"></i> Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="col-md-6">
-                            <div class="annotateur-info">
-                                <strong>ID Couple:</strong> <span th:text="${couple.ID}"></span>
+                        <div th:if="${annotateurIdsDejaAffectes == null || annotateurIdsDejaAffectes.isEmpty()}" class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Aucun annotateur n'est actuellement affecté à ce dataset.
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/admin/assignTasks(datasetId=${dataset.ID})}" class="btn btn-primary me-2">
+                                <i class="bi bi-person-plus-fill me-2"></i> Affecter des annotateurs
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avancement par annotateur -->
+                <div class="card mt-4" th:if="${progressByAnnotateur != null && !progressByAnnotateur.isEmpty()}">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Avancement par annotateur</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Annotateur</th>
+                                    <th>Avancement</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="entry : ${progressByAnnotateur}">
+                                    <td>
+                                <span th:with="annotateurId=${entry.key}">
+                                    <span th:each="annotateur : ${annotateurs}"
+                                          th:if="${annotateur.ID == annotateurId}"
+                                          th:text="${annotateur.prenom + ' ' + annotateur.nom}">
+                                        Nom de l'annotateur
+                                    </span>
+                                </span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar"
+                                                 th:style="'width: ' + ${entry.value} + '%;'"
+                                                 th:aria-valuenow="${entry.value}"
+                                                 aria-valuemin="0" aria-valuemax="100"
+                                                 th:classappend="${entry.value == 100 ? 'bg-success' : (entry.value > 0 ? 'bg-primary' : 'bg-secondary')}">
+                                                <span th:text="${entry.value} + '%'"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Couples annotés pour modification -->
+                <div class="card mt-4" th:if="${annotatedCouples != null && !annotatedCouples.isEmpty()}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Couples annotés - Modification</h5>
+                        <span class="badge bg-success text-white" th:text="${annotatedCouples.size() + ' couples annotés'}">0 couples annotés</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Vous pouvez modifier les annotations faites par les annotateurs en sélectionnant une nouvelle classe.
+                        </div>
+
+                        <div th:each="couple : ${annotatedCouples}" class="border rounded p-3 mb-3" style="background-color: #f8f9fa;">
+                            <!-- En-tête du couple -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-file-text me-2"></i>Couple #<span th:text="${couple.ID}">1</span>
+                                </h6>
+                                <div th:if="${couple.annotation != null && couple.annotation.annotateur != null}"
+                                     class="badge bg-warning text-dark">
+                                    <i class="bi bi-person me-1"></i>
+                                    Annoté par : <span th:text="${couple.annotation.annotateur.prenom + ' ' + couple.annotation.annotateur.nom}">Nom Annotateur</span>
+                                </div>
+                            </div>
+
+                            <!-- Textes du couple -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6><i class="bi bi-file-text me-1"></i>Texte 1</h6>
+                                    <div class="text-box" th:text="${couple.texte1}">Texte 1</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6><i class="bi bi-file-text me-1"></i>Texte 2</h6>
+                                    <div class="text-box" th:text="${couple.texte2}">Texte 2</div>
+                                </div>
+                            </div>
+
+                            <!-- Section d'annotation -->
+                            <div class="annotation-form">
+                                <!-- Annotation actuelle -->
+                                <div class="mb-3" th:if="${couple.annotation != null}">
+                                    <strong>Annotation actuelle :</strong>
+                                    <span class="badge bg-primary ms-2" th:text="${couple.annotation.typeChoisie}">Classe actuelle</span>
+                                </div>
+
+                                <!-- Formulaire de modification -->
+                                <div class="row align-items-end">
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-bold">
+                                            <i class="bi bi-tag me-1"></i>Nouvelle classe :
+                                        </label>
+                                        <select class="form-select" th:id="'classe-' + ${couple.ID}">
+                                            <option value="">-- Sélectionner une classe --</option>
+                                            <option th:each="classe : ${classes}"
+                                                    th:value="${classe.nomClasse}"
+                                                    th:text="${classe.nomClasse}"
+                                                    th:selected="${couple.annotation != null && couple.annotation.typeChoisie == classe.nomClasse}">
+                                                Classe
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button"
+                                                class="btn btn-success w-100"
+                                                th:onclick="'updateAnnotation(' + ${couple.annotation != null ? couple.annotation.ID : couple.ID} + ', ' + ${couple.ID} + ')'"
+                                                th:id="'btn-' + ${couple.ID}">
+                                            <i class="bi bi-save me-1"></i>Modifier
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <h6>Classe choisie</h6>
-                            <div class="d-flex flex-wrap" th:attr="data-couple-id=${couple.ID}">
-                                <button th:each="classe : ${classes}"
-                                        th:text="${classe.nomClasse}"
-                                        th:class="${couple.annotation != null && couple.annotation.typeChoisie == classe.nomClasse ? 'btn btn-sm class-btn selected' : 'btn btn-sm btn-outline-primary class-btn'}"
-                                        th:attr="data-class=${classe.nomClasse}"
-                                        onclick="selectClass(this)">
-                                </button>
+                </div>
+
+                <!-- Liste des couples de textes -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Tous les couples de textes</h5>
+                        <div>
+                            <span class="badge bg-primary text-black" th:text="${allCouples != null ? allCouples.size() + ' couples' : '0 couples'}">0 couples</span>
+                            <span th:if="${dataset.isProcessing}" class="badge bg-warning text-dark ms-2">
+                    <i class="bi bi-hourglass-split me-1"></i> Traitement en cours...
+                </span>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Indicateur de chargement -->
+                        <div th:if="${dataset.isProcessing}" class="alert alert-warning">
+                            <div class="d-flex align-items-center">
+                                <div class="spinner-border spinner-border-sm me-2" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
+                                <div>
+                                    Le traitement du fichier est en cours. Les couples de textes s'afficheront progressivement.
+                                    <button id="refreshBtn" class="btn btn-sm btn-outline-primary ms-3">Rafraîchir</button>
+                                </div>
                             </div>
-                            <div class="mt-2">
-                                <button class="btn btn-primary btn-sm" onclick="saveAnnotation(this)">
-                                    <i class="bi bi-save"></i> Enregistrer la modification
-                                </button>
-                                <div class="validation-message mt-2" style="display: none;"></div>
-                            </div>
+                        </div>
+
+                        <div th:if="${(allCouples == null || allCouples.isEmpty()) && !dataset.isProcessing}" class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i> Aucun couple de textes trouvé pour ce dataset.
+                        </div>
+
+                        <div th:if="${allCouples != null && !allCouples.isEmpty()}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th width="45%">Texte 1</th>
+                                    <th width="45%">Texte 2</th>
+                                    <th width="5%">ID</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="couple, status : ${allCouples}">
+                                    <td th:text="${status.count}">1</td>
+                                    <td>
+                                        <div class="text-box" th:text="${couple.texte1}">Texte 1</div>
+                                    </td>
+                                    <td>
+                                        <div class="text-box" th:text="${couple.texte2}">Texte 2</div>
+                                    </td>
+                                    <td th:text="${couple.ID}">1</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -178,50 +556,56 @@
         </div>
     </div>
 </div>
+</div>
 
 <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="/js/sidebar-navbar-template.js"></script>
-
 <script>
-    // Variables globales
-    let selectedClasses = {};
+    // Script pour la fonctionnalité de la sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const menuToggle = document.getElementById('menu-toggle');
+        const userDropdown = document.querySelector('.user-dropdown');
+        const appContainer = document.querySelector('.app-container');
+        const contentWrapper = document.querySelector('.content-wrapper');
 
-    // Fonction pour sélectionner une classe
-    function selectClass(button) {
-        const parentDiv = button.parentElement;
-        const coupleId = parentDiv.getAttribute('data-couple-id');
-        const className = button.getAttribute('data-class');
+        // Fonction pour basculer la sidebar
+        function toggleSidebar() {
+            appContainer.classList.toggle('sidebar-collapsed');
+        }
 
-        // Mettre à jour la sélection
-        selectedClasses[coupleId] = className;
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
 
-        // Mettre à jour l'apparence des boutons
-        const buttons = parentDiv.querySelectorAll('button');
-        buttons.forEach(btn => {
-            if (btn.getAttribute('data-class') === className) {
-                btn.classList.add('selected');
-            } else {
-                btn.classList.remove('selected');
+        // Fonctionnalité du menu déroulant utilisateur
+        if (userDropdown) {
+            userDropdown.addEventListener('click', function(event) {
+                event.stopPropagation();
+                this.classList.toggle('active');
+            });
+        }
+
+        // Fermer le menu déroulant en cliquant à l'extérieur
+        document.addEventListener('click', function(event) {
+            if (userDropdown && !userDropdown.contains(event.target)) {
+                userDropdown.classList.remove('active');
             }
         });
-    }
+    });
 
-    // Fonction pour enregistrer une annotation
-    function saveAnnotation(button) {
-        const coupleId = button.parentElement.previousElementSibling.getAttribute('data-couple-id');
-        const classeChoisie = selectedClasses[coupleId];
-        const validationMessage = button.nextElementSibling;
+    // Fonction pour mettre à jour une annotation
+    function updateAnnotation(annotationId, coupleId) {
+        const selectElement = document.getElementById('classe-' + coupleId);
+        const buttonElement = document.getElementById('btn-' + coupleId);
+        const classeChoisie = selectElement.value;
 
         if (!classeChoisie) {
-            validationMessage.textContent = 'Veuillez sélectionner une classe';
-            validationMessage.className = 'validation-message validation-error';
-            validationMessage.style.display = 'block';
+            showAlert('Veuillez sélectionner une classe.', 'danger');
             return;
         }
 
-        // Désactiver le bouton pendant la requête
-        button.disabled = true;
-        button.innerHTML = '<i class="bi bi-hourglass"></i> Enregistrement...';
+        // Désactiver le bouton et afficher le spinner
+        buttonElement.disabled = true;
+        buttonElement.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Modification...';
 
         // Envoyer la requête AJAX
         fetch('/admin/updateAnnotation', {
@@ -229,46 +613,52 @@
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: 'annotationId=' + coupleId + '&classeChoisie=' + encodeURIComponent(classeChoisie)
+            body: 'annotationId=' + encodeURIComponent(annotationId) + '&classeChoisie=' + encodeURIComponent(classeChoisie)
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                validationMessage.textContent = 'Annotation modifiée avec succès';
-                validationMessage.className = 'validation-message validation-success';
+                showAlert('Annotation modifiée avec succès !', 'success');
+
+                // Recharger la page après un délai
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
             } else {
-                validationMessage.textContent = data.message || 'Erreur lors de la modification';
-                validationMessage.className = 'validation-message validation-error';
+                showAlert('Erreur : ' + data.message, 'danger');
             }
-            validationMessage.style.display = 'block';
         })
         .catch(error => {
             console.error('Erreur:', error);
-            validationMessage.textContent = 'Erreur de communication avec le serveur';
-            validationMessage.className = 'validation-message validation-error';
-            validationMessage.style.display = 'block';
+            showAlert('Une erreur s\'est produite lors de la modification.', 'danger');
         })
         .finally(() => {
             // Réactiver le bouton
-            button.disabled = false;
-            button.innerHTML = '<i class="bi bi-save"></i> Enregistrer la modification';
-
-            // Masquer le message après 3 secondes
-            setTimeout(() => {
-                validationMessage.style.display = 'none';
-            }, 3000);
+            buttonElement.disabled = false;
+            buttonElement.innerHTML = '<i class="bi bi-save me-1"></i>Modifier';
         });
     }
 
-    // Initialiser les classes sélectionnées au chargement de la page
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.class-btn.selected').forEach(button => {
-            const parentDiv = button.parentElement;
-            const coupleId = parentDiv.getAttribute('data-couple-id');
-            const className = button.getAttribute('data-class');
-            selectedClasses[coupleId] = className;
-        });
-    });
+    // Fonction pour afficher les alertes
+    function showAlert(message, type) {
+        const alertContainer = document.createElement('div');
+        alertContainer.className = `alert alert-${type} alert-dismissible fade show`;
+        alertContainer.innerHTML = `
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        // Insérer l'alerte au début du contenu principal
+        const mainContent = document.querySelector('.main-content');
+        mainContent.insertBefore(alertContainer, mainContent.firstChild);
+
+        // Auto-dismiss après 5 secondes
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alertContainer);
+            bsAlert.close();
+        }, 5000);
+    }
 </script>
 </body>
 </html>

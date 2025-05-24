@@ -11,29 +11,51 @@
     <link rel="stylesheet" href="/css/sidebar-navbar.css">
     <style>
         /* Styles spécifiques à cette page */
+        body {
+            background: linear-gradient(135deg, #2E86AB 0%, #0E4B99 50%, #1A1A2E 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(46, 134, 171, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(14, 75, 153, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(26, 26, 46, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
 
         .navbar-brand {
             font-weight: 600;
-            color: #333;
+            color: #2d3748;
             font-size: 1.25rem;
         }
 
         .nav-link {
-            color: #555;
+            color: #4a5568;
             font-weight: 500;
             padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
         .nav-link:hover {
-            background-color: #f0f0f0;
-            color: #333;
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+            color: white;
+            transform: translateY(-1px);
         }
 
         .nav-link.active {
-            background-color: #f0f0f0;
-            color: #4361ee;
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+            color: white;
         }
 
         .nav-link i {
@@ -50,27 +72,73 @@
         .footer {
             margin-top: auto;
             padding: 1rem 0;
-            background-color: white;
-            border-top: 1px solid #eee;
-            color: #6c757d;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: #4a5568;
             font-size: 0.875rem;
         }
 
         /* Styles pour la page d'accueil */
         .welcome-section {
-            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 2.5rem 3rem;
+            margin: 0 auto 2.5rem auto;
+            max-width: 800px;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
         }
 
         .welcome-title {
-            font-size: 1.75rem;
+            font-size: 1.8rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+            letter-spacing: -0.01em;
         }
 
         .welcome-subtitle {
-            color: #6c757d;
-            margin-bottom: 1.5rem;
+            color: #cbd5e1;
+            margin-bottom: 0;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        /* Responsive pour la section de bienvenue */
+        @media (max-width: 768px) {
+            .welcome-section {
+                max-width: 90%;
+                padding: 1.5rem 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .welcome-subtitle {
+                font-size: 0.9rem;
+            }
         }
 
         .admin-cards {
@@ -155,6 +223,269 @@
         .admin-card-link i {
             margin-right: 0.5rem;
         }
+
+        /* Styles pour les cartes de statistiques - Taille réduite */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            padding: 0 1rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow:
+                0 15px 30px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.2),
+                0 0 25px rgba(46, 134, 171, 0.1);
+        }
+
+        .stat-card:hover::before {
+            height: 4px;
+            box-shadow: 0 0 15px rgba(46, 134, 171, 0.3);
+        }
+
+        .stat-card.datasets::before {
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+        }
+
+        .stat-card.annotateurs::before {
+            background: linear-gradient(135deg, #0E4B99, #1A1A2E);
+        }
+
+        .stat-card.classes::before {
+            background: linear-gradient(135deg, #1A1A2E, #2E86AB);
+        }
+
+        .stat-card.taches::before {
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+        }
+
+
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.6rem;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            opacity: 0.1;
+            border-radius: inherit;
+        }
+
+        .stat-icon.datasets {
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+            color: white;
+            box-shadow: 0 8px 16px rgba(46, 134, 171, 0.3);
+        }
+
+        .stat-icon.annotateurs {
+            background: linear-gradient(135deg, #0E4B99, #1A1A2E);
+            color: white;
+            box-shadow: 0 8px 16px rgba(14, 75, 153, 0.3);
+        }
+
+        .stat-icon.classes {
+            background: linear-gradient(135deg, #1A1A2E, #2E86AB);
+            color: white;
+            box-shadow: 0 8px 16px rgba(26, 26, 46, 0.3);
+        }
+
+        .stat-icon.taches {
+            background: linear-gradient(135deg, #2E86AB, #0E4B99);
+            color: white;
+            box-shadow: 0 8px 16px rgba(46, 134, 171, 0.3);
+        }
+
+
+
+        .stat-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .stat-detail {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-detail:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-detail-label {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .stat-detail-value {
+            color: #2d3748;
+            font-weight: 700;
+            margin-left: 0.25rem;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive pour les statistiques */
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 0.8rem;
+                padding: 0 0.5rem;
+                max-width: 100%;
+            }
+
+            .stat-card {
+                padding: 0.8rem;
+                min-height: 100px;
+            }
+
+            .stat-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+                margin-right: 0.5rem;
+            }
+
+            .stat-value {
+                font-size: 1.4rem;
+            }
+
+            .stat-title {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animation d'apparition */
+        .fadeIn {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Animation de pulsation pour les icônes */
+        .stat-icon {
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Animation décalée pour les cartes */
+        .stat-card:nth-child(1) { animation-delay: 0s; }
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.15s; }
+        .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+        /* Animation décalée pour les icônes */
+        .stat-card:nth-child(1) .stat-icon { animation-delay: 0.2s; }
+        .stat-card:nth-child(2) .stat-icon { animation-delay: 0.3s; }
+        .stat-card:nth-child(3) .stat-icon { animation-delay: 0.35s; }
+        .stat-card:nth-child(4) .stat-icon { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
@@ -243,42 +574,100 @@
         <div class="main-content">
             <div class="welcome-section fadeIn">
                 <h1 class="welcome-title">Bienvenue dans l'interface d'administration</h1>
-                <p class="welcome-subtitle">Gérez vos datasets et annotateurs facilement depuis ce tableau de bord central.</p>
+                <p class="welcome-subtitle">Utilisez la barre latérale pour naviguer entre les différentes sections d'administration.</p>
             </div>
 
-            <div class="admin-cards">
-                <div class="admin-card fadeIn">
-                    <div class="admin-card-icon">
-                        <i class="bi bi-database"></i>
+            <!-- Cartes de statistiques -->
+            <div class="stats-overview" th:if="${statistics}">
+                <!-- Statistiques des Datasets -->
+                <div class="stat-card datasets fadeIn">
+                    <div class="stat-header">
+                        <div class="stat-icon datasets">
+                            <i class="bi bi-database"></i>
+                        </div>
+                        <h3 class="stat-title">Datasets</h3>
                     </div>
-                    <h2 class="admin-card-title">Gérer les Datasets</h2>
-                    <p class="admin-card-text">Ajoutez, modifiez ou supprimez des datasets. Importez des fichiers CSV ou Excel contenant des paires de textes à annoter.</p>
-                    <a href="/admin/Dataset" class="admin-card-link">
-                        Accéder
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
+                    <div class="stat-value" th:text="${statistics.datasets.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">En traitement:</span>
+                            <span class="stat-detail-value" th:text="${statistics.datasets.enTraitement ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Couples texte:</span>
+                            <span class="stat-detail-value" th:text="${statistics.datasets.totalCouplesTexte ?: '0'}">0</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="admin-card annotateurs fadeIn">
-                    <div class="admin-card-icon annotateurs">
-                        <i class="bi bi-people"></i>
+                <!-- Statistiques des Annotateurs -->
+                <div class="stat-card annotateurs fadeIn">
+                    <div class="stat-header">
+                        <div class="stat-icon annotateurs">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3 class="stat-title">Annotateurs</h3>
                     </div>
-                    <h2 class="admin-card-title">Gérer les Annotateurs</h2>
-                    <p class="admin-card-text">Ajoutez, modifiez ou supprimez des annotateurs. Gérez les comptes utilisateurs qui effectueront les annotations.</p>
-                    <a href="/admin/listeAnnotateur" class="admin-card-link annotateurs">
-                        Accéder
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
+                    <div class="stat-value" th:text="${statistics.annotateurs.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Avec tâches:</span>
+                            <span class="stat-detail-value" th:text="${statistics.annotateurs.avecTaches ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Annotations:</span>
+                            <span class="stat-detail-value" th:text="${statistics.annotateurs.totalAnnotations ?: '0'}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques des Classes -->
+                <div class="stat-card classes fadeIn">
+                    <div class="stat-header">
+                        <div class="stat-icon classes">
+                            <i class="bi bi-tags"></i>
+                        </div>
+                        <h3 class="stat-title">Classes</h3>
+                    </div>
+                    <div class="stat-value" th:text="${statistics.classes.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Moyenne par dataset:</span>
+                            <span class="stat-detail-value" th:text="${statistics.classes.moyenneParDataset ?: '0'}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques des Tâches -->
+                <div class="stat-card taches fadeIn">
+                    <div class="stat-header">
+                        <div class="stat-icon taches">
+                            <i class="bi bi-list-task"></i>
+                        </div>
+                        <h3 class="stat-title">Tâches</h3>
+                    </div>
+                    <div class="stat-value" th:text="${statistics.taches.total ?: '0'}">0</div>
+                    <div class="stat-details">
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Terminées:</span>
+                            <span class="stat-detail-value" th:text="${statistics.taches.terminees ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">En cours:</span>
+                            <span class="stat-detail-value" th:text="${statistics.taches.enCours ?: '0'}">0</span>
+                        </div>
+                        <div class="stat-detail">
+                            <span class="stat-detail-label">Non commencées:</span>
+                            <span class="stat-detail-value" th:text="${statistics.taches.nonCommencees ?: '0'}">0</span>
+                        </div>
+                    </div>
                 </div>
 
 
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="footer text-center">
-            <span>© 2025 Annotation App. Tous droits réservés.</span>
-        </footer>
+
     </div>
 </div>
 
@@ -318,38 +707,7 @@
                 document.querySelector('.user-dropdown.open').classList.remove('open');
             }
         });
-
-        // Charger les statistiques
-        loadStatistics();
     });
-
-    /**
-     * Fonction pour charger les statistiques depuis l'API
-     */
-    function loadStatistics() {
-        fetch('/admin/api/statistics')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur réseau: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Mettre à jour les valeurs dans la sidebar
-                document.getElementById('stat-annotateurs').textContent = data.totalAnnotateurs || '0';
-                document.getElementById('stat-datasets').textContent = data.totalDatasets || '0';
-                document.getElementById('stat-taches').textContent = data.totalTaches || '0';
-                document.getElementById('stat-annotations').textContent = data.totalAnnotations || '0';
-            })
-            .catch(error => {
-                console.error('Erreur lors du chargement des statistiques:', error);
-                // Afficher des valeurs par défaut en cas d'erreur
-                document.getElementById('stat-annotateurs').textContent = 'N/A';
-                document.getElementById('stat-datasets').textContent = 'N/A';
-                document.getElementById('stat-taches').textContent = 'N/A';
-                document.getElementById('stat-annotations').textContent = 'N/A';
-            });
-    }
 </script>
 </body>
 </html>

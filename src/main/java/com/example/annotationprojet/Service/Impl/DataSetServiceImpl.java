@@ -1,9 +1,11 @@
-package com.example.annotationprojet.Service;
+package com.example.annotationprojet.Service.Impl;
 
+import com.example.annotationprojet.Service.DataSetService;
 import com.example.annotationprojet.entities.Classes;
 import com.example.annotationprojet.entities.DataSet;
 import com.example.annotationprojet.entities.Tache;
 import com.example.annotationprojet.entities.coupleTexte;
+import com.example.annotationprojet.repositories.AnnotationRepository;
 import com.example.annotationprojet.repositories.ClassesRepository;
 import com.example.annotationprojet.repositories.DataSetRepository;
 import com.example.annotationprojet.repositories.TacheRepository;
@@ -42,6 +44,9 @@ public class DataSetServiceImpl implements DataSetService {
     @Autowired
     private TacheRepository tacheRepository;
 
+    @Autowired
+    private AnnotationRepository annotationRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -69,6 +74,38 @@ public class DataSetServiceImpl implements DataSetService {
 
 
         System.out.println("Dataset créé avec succès. Le traitement des données sera effectué en arrière-plan.");
+        return dataSet;
+    }
+
+    @Override
+    @Transactional
+    public DataSet importDataSetWithProcessing(MultipartFile file, String nom, String description, String classes) throws IOException {
+        if (file.isEmpty()) throw new IllegalArgumentException("Le fichier est vide");
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) throw new IllegalArgumentException("Nom de fichier invalide");
+
+        String extension = getFileExtension(originalFilename);
+        if (!List.of("csv", "xlsx", "xls").contains(extension)) {
+            throw new IllegalArgumentException("Format de fichier non supporté. Seuls les formats CSV et Excel (.xlsx, .xls) sont acceptés.");
+        }
+
+        System.out.println("[SYNC] Début de l'importation directe du fichier: " + originalFilename);
+        Path filePath = saveFile(file);
+        System.out.println("[SYNC] Fichier sauvegardé à: " + filePath);
+
+        DataSet dataSet = createDataSet(nom, description, filePath);
+        processClasses(classes, dataSet);
+        System.out.println("[SYNC] Dataset créé avec ID: " + dataSet.getID());
+
+        // Traitement DIRECT et SYNCHRONE des données (comme avant)
+        try {
+            processDataSetFile(dataSet);
+            System.out.println("[SYNC] Traitement terminé avec succès pour: " + nom);
+        } catch (Exception e) {
+            System.err.println("[SYNC] Erreur lors du traitement: " + e.getMessage());
+            // On garde le dataset même si le traitement échoue
+        }
+
         return dataSet;
     }
 
@@ -297,177 +334,80 @@ public class DataSetServiceImpl implements DataSetService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteDataSet(Integer id) {
         try {
-            // Récupérer le dataset avec une requête distincte pour éviter les problèmes de cache
+            System.out.println("Début de la suppression du dataset avec ID: " + id);
+
+            // Récupérer le dataset
             DataSet dataSet = dataSetRepository.findById(id).orElse(null);
             if (dataSet == null) {
-                return;
+                System.out.println("Dataset non trouvé avec ID: " + id);
+                throw new RuntimeException("Dataset non trouvé avec ID: " + id);
             }
 
-            // 0. Désactiver temporairement les contraintes de clé étrangère
-            // Cette approche est utilisée uniquement pour résoudre les problèmes de suppression
-            // en production, il serait préférable de restructurer les relations entre entités
-            try {
-                entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=0").executeUpdate();
-                System.out.println("Contraintes de clé étrangère désactivées");
-            } catch (Exception e) {
-                System.err.println("Erreur lors de la désactivation des contraintes de clé étrangère: " + e.getMessage());
-            }
+            System.out.println("Dataset trouvé: " + dataSet.getNom());
 
-            try {
-                // 1. Récupérer et supprimer les tâches associées au dataset
-                List<Tache> taches = tacheRepository.findByData(dataSet);
-                if (taches != null && !taches.isEmpty()) {
-                    System.out.println("Suppression de " + taches.size() + " tâches");
-
-                    // Pour chaque tâche, dissocier les couples de textes
-                    for (Tache tache : taches) {
-                        List<coupleTexte> couples = tache.getCoupleTexte();
-                        if (couples != null) {
-                            for (coupleTexte couple : new ArrayList<>(couples)) {
-                                couple.setTache(null);
-                                coupleTexteRepository.save(couple);
-                            }
-                            // Vider la liste des couples de textes de la tâche
-                            couples.clear();
-                        }
-                    }
-
-                    // Sauvegarder les changements avant de supprimer
-                    coupleTexteRepository.flush();
-
-                    // Supprimer les tâches
-                    tacheRepository.deleteAll(taches);
-                    tacheRepository.flush();
-                }
-
-                // Vérifier la structure de la table couple_texte
-                try {
-                    System.out.println("Vérification de la structure de la table couple_texte...");
-                    List<Object[]> columns = entityManager.createNativeQuery(
-                            "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS " +
-                            "WHERE TABLE_SCHEMA = 'annotation-db' AND TABLE_NAME = 'couple_texte'").getResultList();
-
-                    System.out.println("Colonnes de la table couple_texte:");
-                    for (Object[] column : columns) {
-                        System.out.println("- " + column[0] + " (" + column[1] + ")");
-                    }
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de la vérification de la structure: " + e.getMessage());
-                }
-
-                // 2. Supprimer les couples de textes associés au dataset
-                // Utiliser une requête SQL native pour supprimer directement les couples de textes
-                // Utiliser des paramètres positionnels (?) au lieu de paramètres nommés
-                System.out.println("Tentative de suppression des couples de textes pour le dataset ID: " + dataSet.getID());
-                try {
-                    // Essayer avec data_set_id
-                    int deletedRows = entityManager.createNativeQuery("DELETE FROM couple_texte WHERE data_set_id = ?", Integer.class)
-                      .setParameter(1, dataSet.getID())
-                      .executeUpdate();
-                    System.out.println("Nombre de couples de textes supprimés avec data_set_id: " + deletedRows);
-
-                    if (deletedRows == 0) {
-                        // Si aucune ligne n'a été supprimée, essayer avec dataset_id
-                        deletedRows = entityManager.createNativeQuery("DELETE FROM couple_texte WHERE dataset_id = ?", Integer.class)
-                          .setParameter(1, dataSet.getID())
-                          .executeUpdate();
-                        System.out.println("Nombre de couples de textes supprimés avec dataset_id: " + deletedRows);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de la suppression des couples de textes: " + e.getMessage());
-                    e.printStackTrace();
-
-                    // Essayer une approche alternative avec JDBC direct
-                    try {
-                        // Essayer de supprimer tous les couples de textes liés au dataset
-                        // en utilisant une requête plus simple sans condition
-                        String sql = "DELETE ct FROM couple_texte ct JOIN data_set ds ON ct.data_set_id = ds.id WHERE ds.id = " + dataSet.getID();
-                        System.out.println("Tentative avec SQL JOIN: " + sql);
-                        int result = entityManager.createNativeQuery(sql).executeUpdate();
-                        System.out.println("Résultat de la suppression avec JOIN: " + result);
-
-                        if (result == 0) {
-                            // Essayer une autre approche
-                            sql = "DELETE FROM couple_texte WHERE data_set_id = " + dataSet.getID();
-                            System.out.println("Tentative avec SQL direct: " + sql);
-                            result = entityManager.createNativeQuery(sql).executeUpdate();
-                            System.out.println("Résultat de la suppression directe: " + result);
-                        }
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de la tentative alternative: " + ex.getMessage());
-                        ex.printStackTrace();
-                    }
-                }
-
-                // 3. Supprimer les classes associées au dataset
-                // Utiliser une requête SQL native pour supprimer directement les classes
-                try {
-                    int deletedClasses = entityManager.createNativeQuery("DELETE FROM classes WHERE data_set_id = ?", Integer.class)
-                      .setParameter(1, dataSet.getID())
-                      .executeUpdate();
-                    System.out.println("Nombre de classes supprimées: " + deletedClasses);
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de la suppression des classes: " + e.getMessage());
-                    e.printStackTrace();
-
-                    // Essayer une approche alternative
-                    try {
-                        String sql = "DELETE FROM classes WHERE data_set_id = " + dataSet.getID();
-                        System.out.println("Tentative avec SQL direct pour les classes: " + sql);
-                        int result = entityManager.createNativeQuery(sql).executeUpdate();
-                        System.out.println("Résultat de la suppression directe des classes: " + result);
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de la tentative alternative pour les classes: " + ex.getMessage());
-                    }
-                }
-
-                // 4. Supprimer le dataset lui-même
-                System.out.println("Suppression du dataset avec ID: " + dataSet.getID());
-                try {
-                    int deletedDataset = entityManager.createNativeQuery("DELETE FROM data_set WHERE id = ?", Integer.class)
-                      .setParameter(1, dataSet.getID())
-                      .executeUpdate();
-                    System.out.println("Dataset supprimé: " + (deletedDataset > 0));
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de la suppression du dataset: " + e.getMessage());
-                    e.printStackTrace();
-
-                    // Essayer une approche alternative
-                    try {
-                        String sql = "DELETE FROM data_set WHERE id = " + dataSet.getID();
-                        System.out.println("Tentative avec SQL direct pour le dataset: " + sql);
-                        int result = entityManager.createNativeQuery(sql).executeUpdate();
-                        System.out.println("Résultat de la suppression directe du dataset: " + result);
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de la tentative alternative pour le dataset: " + ex.getMessage());
-                    }
-                }
-
-                // 5. Supprimer le fichier physique si nécessaire
-                String filePath = dataSet.getUrl();
-                if (filePath != null && !filePath.isEmpty()) {
-                    try {
-                        File file = new File(filePath);
-                        if (file.exists()) {
-                            boolean deleted = file.delete();
-                            System.out.println("Fichier supprimé: " + deleted);
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Erreur lors de la suppression du fichier : " + e.getMessage());
-                    }
-                }
-            } finally {
-                // Réactiver les contraintes de clé étrangère
-                try {
-                    entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=1").executeUpdate();
-                    System.out.println("Contraintes de clé étrangère réactivées");
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de la réactivation des contraintes de clé étrangère: " + e.getMessage());
+            // 1. Supprimer les annotations liées aux couples de texte du dataset
+            System.out.println("Suppression des annotations...");
+            List<coupleTexte> couples = coupleTexteRepository.findByDataSet(dataSet);
+            for (coupleTexte couple : couples) {
+                if (couple.getAnnotation() != null) {
+                    annotationRepository.delete(couple.getAnnotation());
+                    couple.setAnnotation(null);
                 }
             }
+
+            // 2. Supprimer les tâches associées au dataset
+            System.out.println("Suppression des tâches...");
+            List<Tache> taches = tacheRepository.findByData(dataSet);
+            if (taches != null && !taches.isEmpty()) {
+                System.out.println("Suppression de " + taches.size() + " tâches");
+
+                // Dissocier les couples de texte des tâches
+                for (Tache tache : taches) {
+                    List<coupleTexte> couplesTask = tache.getCoupleTexte();
+                    if (couplesTask != null) {
+                        for (coupleTexte couple : couplesTask) {
+                            couple.setTache(null);
+                        }
+                    }
+                }
+
+                // Supprimer les tâches
+                tacheRepository.deleteAll(taches);
+            }
+
+            // 3. Supprimer les couples de textes associés au dataset
+            System.out.println("Suppression des couples de textes...");
+            coupleTexteRepository.deleteByDataSet(dataSet);
+
+            // 4. Supprimer les classes associées au dataset
+            System.out.println("Suppression des classes...");
+            List<Classes> classes = classesRepository.findByDataSet(dataSet);
+            if (classes != null && !classes.isEmpty()) {
+                classesRepository.deleteAll(classes);
+            }
+
+            // 5. Supprimer le dataset lui-même
+            System.out.println("Suppression du dataset avec ID: " + dataSet.getID());
+            dataSetRepository.delete(dataSet);
+
+            // 6. Supprimer le fichier physique si nécessaire
+            String filePath = dataSet.getUrl();
+            if (filePath != null && !filePath.isEmpty()) {
+                try {
+                    File file = new File(filePath);
+                    if (file.exists()) {
+                        boolean deleted = file.delete();
+                        System.out.println("Fichier supprimé: " + deleted);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de la suppression du fichier : " + e.getMessage());
+                }
+            }
+
+            System.out.println("Dataset supprimé avec succès: " + dataSet.getNom());
         } catch (Exception e) {
             System.err.println("Erreur lors de la suppression du dataset: " + e.getMessage());
             e.printStackTrace();

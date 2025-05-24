@@ -2,20 +2,28 @@ package com.example.annotationprojet.web.admin;
 
 import com.example.annotationprojet.Service.AnnotationService;
 import com.example.annotationprojet.Service.DataSetService;
+import com.example.annotationprojet.Service.ProgressService;
 import com.example.annotationprojet.entities.Classes;
 import com.example.annotationprojet.entities.DataSet;
 import com.example.annotationprojet.entities.coupleTexte;
+import com.example.annotationprojet.entities.Annotateur;
+import com.example.annotationprojet.entities.Tache;
 import com.example.annotationprojet.repositories.ClassesRepository;
+import com.example.annotationprojet.repositories.coupleTexteRepository;
+import com.example.annotationprojet.repositories.AnnotateurRepository;
+import com.example.annotationprojet.repositories.TacheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 @Controller
 @RequestMapping("/admin")
@@ -30,6 +38,18 @@ public class AdminAnnotationController {
     @Autowired
     private ClassesRepository classesRepository;
 
+    @Autowired
+    private coupleTexteRepository coupleTexteRepository;
+
+    @Autowired
+    private AnnotateurRepository annotateurRepository;
+
+    @Autowired
+    private TacheRepository tacheRepository;
+
+    @Autowired
+    private ProgressService progressService;
+
     /**
      * Affiche la page des annotations d'un dataset
      * @param datasetId L'ID du dataset
@@ -37,7 +57,7 @@ public class AdminAnnotationController {
      * @return La vue à afficher
      */
     @GetMapping("/viewAnnotations")
-    public String viewAnnotations(@RequestParam("datasetId") Integer datasetId, Model model) {
+    public String viewAnnotations(@RequestParam("datasetId") Integer datasetId, Model model, HttpServletRequest request) {
         try {
             // Récupérer le dataset
             DataSet dataset = dataSetService.getDataSetById(datasetId);
@@ -46,16 +66,54 @@ public class AdminAnnotationController {
                 return "error/custom-error";
             }
 
+            // Récupérer tous les couples de texte du dataset
+            List<coupleTexte> allCouples = coupleTexteRepository.findByDataSet(dataset);
+
             // Récupérer les couples annotés
             List<coupleTexte> annotatedCouples = annotationService.getAnnotatedCouplesByDataset(datasetId);
 
             // Récupérer les classes disponibles
             List<Classes> classes = classesRepository.findByDataSet(dataset);
 
+            // Récupérer tous les annotateurs actifs
+            List<Annotateur> annotateurs = annotateurRepository.findByActiveTrue();
+
+            // Récupérer les annotateurs affectés à ce dataset
+            Set<Integer> annotateurIdsDejaAffectes = new HashSet<>();
+            List<Tache> taches = tacheRepository.findByData(dataset);
+
+            if (taches != null) {
+                for (Tache tache : taches) {
+                    if (tache != null && tache.getAnnotateur() != null) {
+                        annotateurIdsDejaAffectes.add(tache.getAnnotateur().getID());
+                    }
+                }
+            }
+
+            // Calculer les statistiques d'avancement
+            try {
+                Map<String, Object> statistics = progressService.calculateDataSetStatistics(dataset);
+                model.addAttribute("statistics", statistics);
+
+                // Calculer l'avancement par annotateur
+                Map<Integer, Integer> progressByAnnotateur = progressService.calculateAnnotateurProgress(dataset);
+                model.addAttribute("progressByAnnotateur", progressByAnnotateur);
+
+                System.out.println("Statistiques d'avancement calculées : " + statistics);
+                System.out.println("Nombre de couples annotés récupérés : " + (annotatedCouples != null ? annotatedCouples.size() : "null"));
+            } catch (Exception e) {
+                System.err.println("Erreur lors du calcul de l'avancement : " + e.getMessage());
+                e.printStackTrace();
+            }
+
             // Ajouter les données au modèle
             model.addAttribute("dataset", dataset);
+            model.addAttribute("allCouples", allCouples);
             model.addAttribute("annotatedCouples", annotatedCouples);
             model.addAttribute("classes", classes);
+            model.addAttribute("annotateurs", annotateurs);
+            model.addAttribute("annotateurIdsDejaAffectes", annotateurIdsDejaAffectes);
+            model.addAttribute("httpServletRequest", request);
 
             return "admin/Dataset/viewAnnotations";
         } catch (Exception e) {
@@ -98,4 +156,5 @@ public class AdminAnnotationController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
 }

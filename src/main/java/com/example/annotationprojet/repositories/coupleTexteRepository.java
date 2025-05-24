@@ -21,10 +21,6 @@ public interface coupleTexteRepository extends JpaRepository<coupleTexte, Intege
 
     List<coupleTexte> findByDataSet(DataSet dataSet);
 
-    /**
-     * Trouve tous les couples de textes associés à une tâche
-     * @param tache La tâche
-     * @return Liste des couples de textes
-     */
+
     List<coupleTexte> findByTache(Tache tache);
 }

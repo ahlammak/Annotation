@@ -19,40 +19,30 @@ public class ProgressService {
     @Autowired
     private TacheRepository tacheRepository;
 
-    /**
-     * Classe utilitaire pour stocker les statistiques d'un dataset
-     */
+
     private class DatasetStats {
         int totalCouples = 0;
         int annotatedCouples = 0;
         Set<Integer> uniqueAnnotateurs = new java.util.HashSet<>();
         Map<Integer, AnnotateurStats> annotateurStatsMap = new HashMap<>();
 
-        /**
-         * Calcule le pourcentage de progression
-         */
+
         int getProgressPercentage() {
             return totalCouples > 0 ? (int) Math.round((double) annotatedCouples / totalCouples * 100) : 0;
         }
     }
 
-    /**
-     * Classe utilitaire pour stocker les statistiques d'un annotateur
-     */
+
     private class AnnotateurStats {
         int totalCouples = 0;
         int annotatedCouples = 0;
 
-        /**
-         * Calcule le pourcentage de progression
-         */
+
         int getProgressPercentage() {
             return totalCouples > 0 ? (int) Math.round((double) annotatedCouples / totalCouples * 100) : 0;
         }
 
-        /**
-         * Fusionne avec d'autres statistiques
-         */
+
         void merge(AnnotateurStats other) {
             int thisProgress = getProgressPercentage();
             int otherProgress = other.getProgressPercentage();
@@ -63,9 +53,7 @@ public class ProgressService {
         }
     }
 
-    /**
-     * Collecte les statistiques d'un dataset
-     */
+
     private DatasetStats collectDatasetStats(DataSet dataSet) {
         DatasetStats stats = new DatasetStats();
 
@@ -119,16 +107,11 @@ public class ProgressService {
         return stats;
     }
 
-    /**
-     * Calcule le pourcentage de progression d'un dataset
-     */
     public int calculateDataSetProgress(DataSet dataSet) {
         return collectDatasetStats(dataSet).getProgressPercentage();
     }
 
-    /**
-     * Calcule la progression par annotateur pour un dataset
-     */
+
     public Map<Integer, Integer> calculateAnnotateurProgress(DataSet dataSet) {
         DatasetStats stats = collectDatasetStats(dataSet);
         Map<Integer, Integer> progressByAnnotateur = new HashMap<>();
@@ -140,9 +123,7 @@ public class ProgressService {
         return progressByAnnotateur;
     }
 
-    /**
-     * Calcule les statistiques complètes d'un dataset
-     */
+
     public Map<String, Object> calculateDataSetStatistics(DataSet dataSet) {
         DatasetStats stats = collectDatasetStats(dataSet);
         Map<String, Object> statistics = new HashMap<>();

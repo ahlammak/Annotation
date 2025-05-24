@@ -112,14 +112,7 @@ public class TaskController {
         }
     }
 
-    /**
-     * Traite l'affectation des tâches depuis la page d'affectation des tâches
-     * @param datasetId L'ID du dataset
-     * @param annotateurIds Les IDs des annotateurs
-     * @param dateLimite La date limite pour les tâches
-     * @param redirectAttributes Les attributs de redirection
-     * @return La redirection
-     */
+
     @PostMapping("/admin/processTaskAssignment")
     public String processTaskAssignment(
             @RequestParam(value = "datasetId", required = false) Integer datasetId,
@@ -193,13 +186,7 @@ public class TaskController {
         }
     }
 
-    /**
-     * Traite l'affectation des tâches depuis la page de détails du dataset
-     * @param datasetId L'ID du dataset
-     * @param annotateurIds Les IDs des annotateurs
-     * @param redirectAttributes Les attributs de redirection
-     * @return La redirection
-     */
+
     @PostMapping("/admin/affecterTaches")
     public String affecterTaches(
             @RequestParam("datasetId") Integer datasetId,

@@ -9,143 +9,123 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="/css/sidebar-navbar.css">
+    <link rel="stylesheet" href="/css/user-dashboard.css">
     <style>
-        /* Styles spécifiques pour l'interface utilisateur */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+        /* Styles simples et épurés pour l'interface utilisateur */
+        body {
+            background: linear-gradient(135deg, #2E86AB 0%, #0E4B99 50%, #1A1A2E 100%);
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .simple-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem;
+            box-shadow:
+                0 25px 50px rgba(15, 15, 35, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .simple-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #F1F5F9;
+            text-align: center;
             margin-bottom: 2rem;
-        }
-        
-        .dashboard-card {
-            background-color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-        }
-        
-        .dashboard-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-        }
-        
-        .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            color: white;
+            gap: 0.5rem;
         }
-        
-        .card-icon.tasks {
-            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
-        }
-        
-        .card-icon.progress {
-            background: linear-gradient(135deg, #06d6a0 0%, #05c195 100%);
-        }
-        
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: #333;
-        }
-        
-        .card-text {
-            color: #6c757d;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
-        }
-        
-        .card-link {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            color: white;
-        }
-        
-        .card-link.tasks {
-            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
-        }
-        
-        .card-link.progress {
-            background: linear-gradient(135deg, #06d6a0 0%, #05c195 100%);
-        }
-        
-        .card-link:hover {
-            transform: translateY(-1px);
-            color: white;
-        }
-        
-        .stats-section {
-            background-color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: none;
-        }
-        
-        .stats-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #333;
-            display: flex;
-            align-items: center;
-        }
-        
-        .stats-grid {
+
+        .simple-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
-        
-        .stat-item {
-            background-color: #f8fafc;
-            border-radius: 8px;
-            padding: 1rem;
+
+        .simple-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(15, 15, 35, 0.2);
+        }
+
+        .simple-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(15, 15, 35, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            color: #00D4FF;
+            margin-bottom: 1rem;
+        }
+
+        .card-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #F1F5F9;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-label {
+            font-size: 0.9rem;
+            color: #CBD5E1;
+            font-weight: 500;
+        }
+
+        .simple-actions {
             text-align: center;
         }
-        
-        .stat-value {
-            font-size: 2rem;
+
+        .simple-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #0E4B99, #2E86AB);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            text-decoration: none;
             font-weight: 600;
-            color: #4361ee;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-label {
-            color: #6c757d;
-            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(14, 75, 153, 0.3);
         }
 
-        .welcome-section {
-            margin-bottom: 2rem;
+        .simple-btn:hover {
+            background: linear-gradient(135deg, #2E86AB, #00D4FF);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(14, 75, 153, 0.4);
+            color: white;
         }
 
-        .welcome-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .simple-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
 
-        .welcome-text {
-            color: #6c757d;
-            margin-bottom: 1.5rem;
+            .simple-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .simple-title {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -178,16 +158,6 @@
                 </li>
             </ul>
         </div>
-
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="avatar">U</div>
-                <div class="user-details">
-                    <div class="user-name" th:text="${annotateur != null ? annotateur.prenom + ' ' + annotateur.nom : 'Utilisateur'}">Utilisateur</div>
-                    <div class="user-email">Annotateur</div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Content Wrapper -->
@@ -198,11 +168,11 @@
                 <button id="menu-toggle" class="menu-toggle">
                     <i class="material-icons">menu</i>
                 </button>
-                <h2 class="page-title">Tableau de bord</h2>
+                <h2 class="page-title">Tableau de Bord Sigma</h2>
             </div>
             <div class="navbar-right">
                 <div class="navbar-item user-dropdown">
-                    <div class="avatar">U</div>
+                    <div class="avatar" th:text="${annotateur != null ? (annotateur.prenom.substring(0, 1) + annotateur.nom.substring(0, 1)) : 'U'}">U</div>
                     <div class="dropdown-menu">
                         <a href="#" class="dropdown-item">
                             <i class="material-icons">person</i>
@@ -219,80 +189,50 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Message d'erreur si présent -->
-            <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                <div th:switch="${param.error[0]}">
-                    <div th:case="'not_annotator'">
-                        <strong>Erreur d'accès :</strong> Vous n'êtes pas autorisé à accéder à cette section. Veuillez contacter l'administrateur.
-                    </div>
-                    <div th:case="'authentication'">
-                        <strong>Erreur d'authentification :</strong> Un problème s'est produit lors de la vérification de votre identité.
-                    </div>
-                    <div th:case="*">
-                        <strong>Erreur :</strong> Une erreur s'est produite. Veuillez réessayer.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section de bienvenue -->
-            <div class="welcome-section">
-                <h1 class="welcome-title">
-                    <i class="bi bi-person-circle me-2"></i>
-                    Bienvenue, <span th:text="${annotateur != null ? annotateur.prenom : 'Annotateur'}">Annotateur</span> !
+            <div class="simple-container">
+                <h1 class="simple-title">
+                    <i class="bi bi-person-circle"></i>
+                    Espace Annotateur
                 </h1>
-                <p class="welcome-text">
-                    Voici votre espace de travail pour gérer vos tâches d'annotation. Vous pouvez consulter vos tâches assignées et suivre votre progression.
-                </p>
-            </div>
 
-            <!-- Section des statistiques -->
-            <div class="stats-section">
-                <h2 class="stats-title">
-                    <i class="bi bi-graph-up me-2"></i>Mes Statistiques
-                </h2>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-value" th:text="${totalTaches != null ? totalTaches : '0'}">0</div>
-                        <div class="stat-label">Tâches assignées</div>
+                <!-- Statistiques Simples -->
+                <div class="simple-stats">
+                    <div class="simple-card">
+                        <div class="card-icon">
+                            <i class="bi bi-list-task"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-number" th:text="${totalTaches ?: 0}">0</div>
+                            <div class="card-label">Tâches Assignées</div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value" th:text="${tachesTerminees != null ? tachesTerminees : '0'}">0</div>
-                        <div class="stat-label">Tâches terminées</div>
+
+                    <div class="simple-card">
+                        <div class="card-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-number" th:text="${tachesTerminees ?: 0}">0</div>
+                            <div class="card-label">Tâches Terminées</div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value" th:text="${tachesEnCours != null ? tachesEnCours : '0'}">0</div>
-                        <div class="stat-label">Tâches en cours</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" th:text="${totalAnnotations != null ? totalAnnotations : '0'}">0</div>
-                        <div class="stat-label">Annotations réalisées</div>
+
+                    <div class="simple-card">
+                        <div class="card-icon">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-number" th:text="${tachesEnCours ?: 0}">0</div>
+                            <div class="card-label">Tâches En Cours</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Cartes d'action -->
-            <div class="dashboard-cards">
-                <div class="dashboard-card">
-                    <div class="card-icon tasks">
-                        <i class="bi bi-list-check"></i>
-                    </div>
-                    <h2 class="card-title">Mes Tâches</h2>
-                    <p class="card-text">Consultez la liste de vos tâches d'annotation assignées et commencez à travailler sur celles qui sont en attente.</p>
-                    <a href="/user/tasks" class="card-link tasks">
-                        <i class="bi bi-arrow-right"></i>
-                        Voir mes tâches
-                    </a>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="card-icon progress">
-                        <i class="bi bi-graph-up"></i>
-                    </div>
-                    <h2 class="card-title">Mon Avancement</h2>
-                    <p class="card-text">Suivez votre progression dans les différentes tâches d'annotation qui vous ont été assignées.</p>
-                    <a href="/user/tasks" class="card-link progress">
-                        <i class="bi bi-arrow-right"></i>
-                        Voir mon avancement
+
+                <!-- Actions Simples -->
+                <div class="simple-actions">
+                    <a href="/user/tasks" class="simple-btn">
+                        <i class="bi bi-play-circle"></i>
+                        Commencer à Annoter
                     </a>
                 </div>
             </div>
@@ -326,16 +266,19 @@
         const userDropdown = document.querySelector('.user-dropdown');
         if (userDropdown) {
             userDropdown.addEventListener('click', function() {
-                this.classList.toggle('open');
+                this.classList.toggle('active');
             });
         }
 
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
-            if (!event.target.closest('.user-dropdown') && document.querySelector('.user-dropdown.open')) {
-                document.querySelector('.user-dropdown.open').classList.remove('open');
+            if (userDropdown && !userDropdown.contains(event.target)) {
+                userDropdown.classList.remove('active');
             }
         });
+
+        // Interface simplifiée - pas d'animations complexes
+        console.log('Interface utilisateur simplifiée chargée');
     });
 </script>
 </body>

@@ -9,10 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ClassesRepository extends JpaRepository<Classes, Integer> {
-    /**
-     * Trouve toutes les classes associées à un dataset
-     * @param dataSet Le dataset
-     * @return Liste des classes
-     */
+
     List<Classes> findByDataSet(DataSet dataSet);
 }

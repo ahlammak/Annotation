@@ -14,6 +14,7 @@ import com.example.annotationprojet.repositories.TacheRepository;
 import com.example.annotationprojet.repositories.coupleTexteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -167,7 +167,7 @@ public class DataSetController {
 
             System.out.println("Fin de la méthode viewDataset, retour de la vue");
 
-            return "admin/Dataset/viewDataset-simple";
+            return "redirect:/admin/viewAnnotations?datasetId=" + id;
         } catch (Exception e) {
             System.err.println("Erreur générale dans viewDataset : " + e.getMessage());
             e.printStackTrace();
@@ -216,6 +216,7 @@ public class DataSetController {
     }
 
     @GetMapping("/admin/removeAnnotateurFromDataset")
+    @Transactional
     public String removeAnnotateurFromDataset(
             @RequestParam("datasetId") Integer datasetId,
             @RequestParam("annotateurId") Integer annotateurId,
@@ -234,7 +235,7 @@ public class DataSetController {
             if (annotateur == null) {
                 redirectAttributes.addFlashAttribute("message", "Annotateur introuvable.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                return "redirect:/admin/viewDataset?id=" + datasetId;
+                return "redirect:/admin/viewAnnotations?datasetId=" + datasetId;
             }
 
 
@@ -248,12 +249,25 @@ public class DataSetController {
                 }
             }
 
+            System.out.println("Autres annotateurs trouvés : " + otherAnnotateurIds.size());
+
             if (otherAnnotateurIds.isEmpty()) {
                 // Aucun autre annotateur disponible, on supprime simplement les tâches
                 List<Tache> taches = tacheRepository.findByDataAndAnnotateur(dataset, annotateur);
                 System.out.println("Nombre de tâches à supprimer : " + (taches != null ? taches.size() : "null"));
 
                 if (taches != null && !taches.isEmpty()) {
+                    // Dissocier les couples de texte des tâches avant suppression
+                    for (Tache tache : taches) {
+                        List<coupleTexte> couples = tache.getCoupleTexte();
+                        if (couples != null) {
+                            for (coupleTexte couple : couples) {
+                                couple.setTache(null);
+                                coupleTexteRepository.save(couple);
+                            }
+                        }
+                    }
+
                     tacheRepository.deleteAll(taches);
                     System.out.println("Tâches supprimées avec succès");
                 }
@@ -272,6 +286,26 @@ public class DataSetController {
                 }
             }
 
+            // Vérifier qu'il ne reste plus de tâches pour cet annotateur
+            List<Tache> remainingTaches = tacheRepository.findByDataAndAnnotateur(dataset, annotateur);
+            if (remainingTaches != null && !remainingTaches.isEmpty()) {
+                System.out.println("ATTENTION: Il reste encore " + remainingTaches.size() + " tâches pour l'annotateur " + annotateur.getPrenom() + " " + annotateur.getNom());
+
+                // Forcer la suppression des tâches restantes
+                for (Tache tache : remainingTaches) {
+                    List<coupleTexte> couples = tache.getCoupleTexte();
+                    if (couples != null) {
+                        for (coupleTexte couple : couples) {
+                            couple.setTache(null);
+                            coupleTexteRepository.save(couple);
+                        }
+                    }
+                }
+                tacheRepository.deleteAll(remainingTaches);
+                tacheRepository.flush(); // Forcer la synchronisation avec la base de données
+                System.out.println("Tâches restantes supprimées avec succès");
+            }
+
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
 
         } catch (Exception e) {
@@ -281,7 +315,7 @@ public class DataSetController {
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
         }
 
-        return "redirect:/admin/viewDataset?id=" + datasetId;
+        return "redirect:/admin/viewAnnotations?datasetId=" + datasetId;
     }
 
     @PostMapping("/admin/importDataset")
@@ -296,13 +330,13 @@ public class DataSetController {
                 throw new IllegalArgumentException("Le fichier est vide");
             }
 
-            // Créer le dataset et sauvegarder le fichier (sans traiter les données)
+            // Import direct et synchrone (comme avant - RAPIDE)
             DataSet importedDataSet = dataSetService.importDataSet(file, nom, description, classes);
 
-            // Lancer le traitement asynchrone des données
-            asyncDataSetService.processDataSetAsync(importedDataSet);
+            // Traitement direct des données (rapide pour petits fichiers Excel)
+            dataSetService.processDataSetFile(importedDataSet);
 
-            redirectAttributes.addFlashAttribute("message", "Dataset ajouté avec succès : " + nom + ". L'importation est limitée à 500 lignes maximum. Le traitement se poursuit en arrière-plan.");
+            redirectAttributes.addFlashAttribute("message", "Dataset ajouté avec succès : " + nom + ". Importé et traité immédiatement (limité à 500 lignes maximum).");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
         } catch (IllegalArgumentException e) {
             // Erreur de validation

@@ -19,10 +19,5 @@ public interface AnnotateurRepository extends JpaRepository<Annotateur, Integer>
 
     List<Annotateur> findByActiveTrue();
 
-    /**
-     * Trouve un annotateur par son login
-     * @param login Le login de l'annotateur
-     * @return L'annotateur correspondant ou null
-     */
     Annotateur findByLogin(String login);
 }
